@@ -19,6 +19,7 @@
 #include <vector>
 
 using namespace std;
+
 int _stat(const char* path,struct _stat* buffer);
 //////////////////////////file/////////////////////////////
 char* read(char* fileURL);

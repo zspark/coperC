@@ -23,3 +23,5 @@ x64/
 external/
 Debug/
 Release/
+external-libs/
+external-includes/

@@ -14,17 +14,18 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "ConfigParser.h"
-#include "debug.hpp"
-#include "Status.h"
 #include <iostream>
 #include <string>
-#include "ConfigFileItem.h"
 #include <math.h>
-#include "Utils.h"
 #include <stdlib.h>
+#include "debugger.h"
+#include "ConfigParser.h"
+#include "Utils.h"
+#include "ConfigFileItem.h"
+#include "Status.h"
 
 using namespace std;
+using namespace cl;
 
 class Range{
 public:
@@ -57,7 +58,7 @@ public:
     }
 
     if(dIndex==-1){
-      error("无法识别的名字区间{"+range+":"+ext+"}");
+      Error("无法识别的名字区间{"+range+":"+ext+"}");
       return;
     }
     samePart=s0.substr(0,dIndex);
@@ -67,7 +68,7 @@ public:
       fromNumber=atoi(s0.substr(dIndex).data());
       endNumber=atoi(s1.substr(dIndex).data());
     } else{
-      error("名字后几位不是数字，无法知道如何步进！{"+range+":"+ext+"}");
+      Error("名字后几位不是数字，无法知道如何步进！{"+range+":"+ext+"}");
     }
   }
 };
@@ -82,11 +83,11 @@ void ConfigParser::parse(vector<string>* c,vector<ConfigFileItem>* itemArray){
     if(it->find_first_of(COMMET_MARK)==0||it->length()==0)continue;
     if(it->find(ROOT)==0){
       root=it->substr(it->find_first_of(MARK_COLON)+1);
-      info("Root URL is: \""+root);
+      Info("Root URL is: \""+root);
       continue;
     } else if(it->find(TARGET)==0){
       target=it->substr(it->find_first_of(MARK_COLON)+1);
-      info("Target URL is: \""+target);
+      Info("Target URL is: \""+target);
       continue;
     }
 
@@ -109,7 +110,7 @@ void ConfigParser::parse(vector<string>* c,vector<ConfigFileItem>* itemArray){
 
 void ConfigParser::parseItem(ConfigFileItem *item){
   string lastPart(item->getLastContentPart());
-  info("Line: "+item->getContent());
+  Info("Line: "+item->getContent());
   if(lastPart==""){
     pushDirectoryFilesIntoItem(item,EXT_ALL,"");
   } else if(lastPart.find_first_of(MARK_BIG_BRACKET)==0){
@@ -131,7 +132,7 @@ void ConfigParser::checkExistAndPush(const string& fileNameE,ConfigFileItem* ite
     //cout<<newName<<endl;
     item->push(newName);
   } else{
-    error("资源不存在:"+fileURL);
+    Error("资源不存在:"+fileURL);
   }
 }
 
@@ -190,14 +191,14 @@ void ConfigParser::pushSameNameFilesIntoItem(string& fileNameN,ConfigFileItem* i
       item->push(*it);
     }
   } else{
-    error("目录不存在:"+s);
+    Error("目录不存在:"+s);
   }
 }
 
 void ConfigParser::pushDirectoryFilesIntoItem(ConfigFileItem* item,const string &ext,const string& fixedURL){
   string dirURL(root+item->getRelativePath()+fixedURL);
   if(!checkDirectoryExistance(dirURL)){
-    error("目录不存在:"+dirURL);
+    Error("目录不存在:"+dirURL);
   } else{
     vector<string> files;
     string fileNameE("*."+ext);

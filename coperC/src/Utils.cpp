@@ -13,18 +13,18 @@
 * misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 */
-#include "Utils.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
-#include "Status.h"
 #include <direct.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <io.h>
 #include <math.h>
-#include "debug.hpp"
+#include "Utils.h"
+#include "Status.h"
+#include "debugger.h"
 
 using namespace std;
 #define R_OK 4 /* Test for read permission. */
@@ -227,7 +227,7 @@ void copyFile(const string & relativePath,const string & fileName){
     createDirectory(folderURL);
   }
 
-  warning(fileURL);
+  cl::Warning(fileURL);
 
   copyFileTo(fileURL,folderURL);
 }

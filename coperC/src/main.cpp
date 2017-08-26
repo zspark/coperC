@@ -14,16 +14,16 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <windows.h>
 #include <iostream>
-#include "Utils.h"
+#include <vector>
 #include <fstream>
+#include "Utils.h"
 #include "Status.h"
 #include "ConfigFileItem.h"
 #include "ConfigParser.h"
-#include <windows.h>
-#include "debug.hpp"
 #include "FileCoper.h"
-#include <vector>
+#include "debugger.h"
 
 
 using namespace std;
@@ -33,7 +33,7 @@ void run(char* filename){
   vector<string> cc;
   readTextFileToArray(filename,&cc);
 
-  info("配置文件行数："+cc.size());
+  cl::Info("配置文件行数："+cc.size());
 
   vector<ConfigFileItem> cfis;
   ConfigParser cp;
@@ -48,15 +48,15 @@ int main(int argc,char * argv[]){
   //SetConsoleTitle(c_title);
 
 
-  info("Hello Coper!");
-  info(argv[0]);
-  info("-----------------------------------------");
+  cl::Info("Hello Coper!");
+  cl::Info(argv[0]);
+  cl::Info("-----------------------------------------");
   appURL=argv[0];
 
   if(argc==2){
     run(argv[1]);
   } else{
-    error("请将配置文件拖入coperC.exe文件");
+    cl::Error("请将配置文件拖入coperC.exe文件");
     //configFileURL="config.txt";
   }
 

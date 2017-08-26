@@ -22,22 +22,22 @@
 
 class ConfigParser{
 
-    void parseItem(ConfigFileItem *item);
-    void checkExistAndPush(const string &fileName,ConfigFileItem *item,const string &fixedURL);
-    void parseContentWithBigBracket(ConfigFileItem *tem);
-    void pushSameNameFilesIntoItem(string &fileNameN,ConfigFileItem *item);
-    void pushDirectoryFilesIntoItem(ConfigFileItem *item,const string &ext,const string &fixedURL);
-    void parseRange(const string& range,const string& ext,ConfigFileItem *item);
+  void parseItem(ConfigFileItem *item);
+  void checkExistAndPush(const string &fileName,ConfigFileItem *item,const string &fixedURL);
+  void parseContentWithBigBracket(ConfigFileItem *tem);
+  void pushSameNameFilesIntoItem(string &fileNameN,ConfigFileItem *item);
+  void pushDirectoryFilesIntoItem(ConfigFileItem *item,const string &ext,const string &fixedURL);
+  void parseRange(const string& range,const string& ext,ConfigFileItem *item);
 
 public:
 
-    /**
-     * 解析优先级：\,{},|,:,~.
-     * @param configFile		配置文件的本地绝对路径；
-     * @param itemArr
-     *
-     */
-     void parse(vector<string>*,vector<ConfigFileItem>*);
+  /**
+   * 解析优先级：\,{},|,:,~.
+   * @param configFile		配置文件的本地绝对路径；
+   * @param itemArr
+   *
+   */
+  void parse(vector<string>*,vector<ConfigFileItem>*);
 
 };
 

@@ -27,21 +27,21 @@ using namespace std;
 *
 */
 class ConfigFileItem{
-    string m_content="";
-    string m_relativePath="";
-    string m_lastContentPart="";
-    vector<string> m_fileArray;
+  string m_content="";
+  string m_relativePath="";
+  string m_lastContentPart="";
+  vector<string> m_fileArray;
 public:
-    ConfigFileItem(string &content);
-    ConfigFileItem();
+  ConfigFileItem(string &content);
+  ConfigFileItem();
 
-    string getContent()const;
-    string getLastContentPart()const;
-    void setLastContentPart(string &value);
-    string getRelativePath()const;
-    void setRelativePath(string &value);
-    void push(string &file);
-    void forEachExe(void (*fn)(const string& ,const string&));
+  string getContent()const;
+  string getLastContentPart()const;
+  void setLastContentPart(string &value);
+  string getRelativePath()const;
+  void setRelativePath(string &value);
+  void push(string &file);
+  void forEachExe(void(*fn)(const string&,const string&));
 };
 
 #endif // CONFIGFILEITEM_H_INCLUDED

@@ -19,7 +19,7 @@
 #include <vector>
 
 using namespace std;
-int _stat(const char* path, struct _stat* buffer);
+int _stat(const char* path,struct _stat* buffer);
 //////////////////////////file/////////////////////////////
 char* read(char* fileURL);
 void readTextFileToArray(char* fileURL,vector<string>* ret);
@@ -45,6 +45,6 @@ void split(const string& s,const string& delim,vector<string>* ret);
 string& trim(string &s);
 string&   replace_all(string&   str,const   string&   old_value,const   string&   new_value);
 
-void copyFile(const string & relativePath, const string & fileName);
+void copyFile(const string & relativePath,const string & fileName);
 
 #endif // UTILS_H_INCLUDED

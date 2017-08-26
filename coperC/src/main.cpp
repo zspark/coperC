@@ -28,39 +28,38 @@
 
 using namespace std;
 
-void run(char* filename) {
+void run(char* filename){
 
- vector<string> cc;
- readTextFileToArray(filename, &cc);
+  vector<string> cc;
+  readTextFileToArray(filename,&cc);
 
- info("配置文件行数：" + cc.size());
+  info("配置文件行数："+cc.size());
 
- vector<ConfigFileItem> cfis;
- ConfigParser cp;
- cp.parse(&cc, &cfis);
+  vector<ConfigFileItem> cfis;
+  ConfigParser cp;
+  cp.parse(&cc,&cfis);
 
- FileCoper fc;
- fc.copyStart(&cfis);
+  FileCoper fc;
+  fc.copyStart(&cfis);
 }
 
-int main(int argc,char * argv[])
-{
-    //char * c_title="Coper version:1.0.1";
-    //SetConsoleTitle(c_title);
+int main(int argc,char * argv[]){
+  //char * c_title="Coper version:1.0.1";
+  //SetConsoleTitle(c_title);
 
 
-    info("Hello Coper!");
-    info(argv[0]);
-    info("-----------------------------------------");
-    appURL=argv[0];
+  info("Hello Coper!");
+  info(argv[0]);
+  info("-----------------------------------------");
+  appURL=argv[0];
 
-    if(argc==2){
-				run(argv[1]);
-    }else{
-        error("请将配置文件拖入coperC.exe文件");
-        //configFileURL="config.txt";
-    }
+  if(argc==2){
+    run(argv[1]);
+  } else{
+    error("请将配置文件拖入coperC.exe文件");
+    //configFileURL="config.txt";
+  }
 
-    system("pause");
-    return 0;
+  system("pause");
+  return 0;
 }

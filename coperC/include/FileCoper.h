@@ -25,11 +25,11 @@
 using namespace std;
 
 class FileCoper{
-private :
-    int _numResCopied=0;
-    void checkStatus(vector<ConfigFileItem>*);
+private:
+  int _numResCopied=0;
+  void checkStatus(vector<ConfigFileItem>*);
 public:
-    void copyStart(vector<ConfigFileItem>*);
+  void copyStart(vector<ConfigFileItem>*);
 };
 
 

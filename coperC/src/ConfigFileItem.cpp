@@ -22,15 +22,15 @@ using namespace std;
 ConfigFileItem::ConfigFileItem(string &content):m_content(content){}
 ConfigFileItem::ConfigFileItem():m_content(""){}
 
-string ConfigFileItem::getContent()const{return m_content;}
-string ConfigFileItem::getLastContentPart()const {return m_lastContentPart;}
-void ConfigFileItem::setLastContentPart(string &value){m_lastContentPart=value;}
-string ConfigFileItem::getRelativePath()const{return m_relativePath;}
-void ConfigFileItem::setRelativePath(string &value){m_relativePath=value;}
-void ConfigFileItem::push(string &file){m_fileArray.push_back(file);}
+string ConfigFileItem::getContent()const{ return m_content; }
+string ConfigFileItem::getLastContentPart()const{ return m_lastContentPart; }
+void ConfigFileItem::setLastContentPart(string &value){ m_lastContentPart=value; }
+string ConfigFileItem::getRelativePath()const{ return m_relativePath; }
+void ConfigFileItem::setRelativePath(string &value){ m_relativePath=value; }
+void ConfigFileItem::push(string &file){ m_fileArray.push_back(file); }
 
-void ConfigFileItem::forEachExe(void (*fn)(const string& ,const string&)){
-    for(vector<string>::iterator it=m_fileArray.begin();it!=m_fileArray.end();it++){
-        (*fn)(m_relativePath,*it);
-    }
+void ConfigFileItem::forEachExe(void(*fn)(const string&,const string&)){
+  for(vector<string>::iterator it=m_fileArray.begin();it!=m_fileArray.end();it++){
+    (*fn)(m_relativePath,*it);
+  }
 }

@@ -24,17 +24,17 @@
 using namespace std;
 
 void FileCoper::copyStart(vector<ConfigFileItem>* itemArray){
-    checkStatus(itemArray);
+  checkStatus(itemArray);
 
-    warning("开始拷贝...");
+  warning("开始拷贝...");
 
-    for(vector<ConfigFileItem>::iterator it =itemArray->begin();it!=itemArray->end();it++){
-        it->forEachExe(copyFile);
-    }
+  for(vector<ConfigFileItem>::iterator it=itemArray->begin();it!=itemArray->end();it++){
+    it->forEachExe(copyFile);
+  }
 }
 
 void FileCoper::checkStatus(vector<ConfigFileItem>* itemArray){
-    if(itemArray->size()==0)error("传入的数组没有内容!");
-    if(root=="" || target=="")error("必要路径信息尚未配置，可能配置表少配，请检查！");
+  if(itemArray->size()==0)error("传入的数组没有内容!");
+  if(root==""||target=="")error("必要路径信息尚未配置，可能配置表少配，请检查！");
 }
 

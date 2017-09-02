@@ -1,4 +1,4 @@
-parameter -v -x -r "./root/" -t "E:/copertest/target/"
+parameter v -y -Y -x -r "./root/" -t "./root2/"
 aaa
 .png
 *.png

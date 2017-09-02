@@ -22,6 +22,7 @@
 #include "parameter_parser.h"
 #include "lexical_analyzer.h"
 #include "grammar_analyzer.h"
+#include "interactive_controller.h"
 
 using namespace std;
 using namespace cl;
@@ -62,6 +63,8 @@ void Run(const clchar* filename){
   }
 
   Unimportant("-----------------------------------------",true,false);
+  InteractiveController ic;
+  if(pp.NeedRequest()) if(!ic.RequestAnalyze())return;
 
   LexicalAnalyzer la(ConsoleForeground::GRAY,ConsoleForeground::RED);
   GrammarAnalyzer ga;

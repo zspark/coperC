@@ -1,5 +1,7 @@
 #pragma once
+#include "cllib.h"
 
+/*
 namespace OperationControllerStage{
 enum stage{
   WAITING=0,
@@ -9,13 +11,16 @@ enum stage{
   HANDLING,
 };
 }
+*/
 
 class InteractiveController final{
 public:
   InteractiveController();
   ~InteractiveController();
 
-private:
-  OperationControllerStage::stage m_currentStage;
+  clbool RequestAnalyze();
 
-}
+private:
+  //OperationControllerStage::stage m_currentStage;
+
+};

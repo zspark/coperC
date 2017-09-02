@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\coper.cpp" />
     <ClCompile Include="src\grammar_analyzer.cpp" />
+    <ClCompile Include="src\interactive_analyzer.cpp" />
     <ClCompile Include="src\lexical_analyzer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\parameter_parser.cpp" />
@@ -31,6 +32,7 @@
     <ClInclude Include="include\FileCoper.h" />
     <ClInclude Include="include\grammar_analyzer.h" />
     <ClInclude Include="include\lexical_analyzer.h" />
+    <ClInclude Include="include\interactive_controller.h" />
     <ClInclude Include="include\parameter_parser.h" />
     <ClInclude Include="include\Status.h" />
     <ClInclude Include="include\Utils.h" />

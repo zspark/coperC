@@ -54,6 +54,10 @@ clbool ParameterParser::Parse(clstr str){
       m_operation_flag|=V_OPERATION_COPY;
     } else if(strcmp(currentStr.c_str(),"-x ")==0){
       m_operation_flag|=V_OPERATION_CUT;
+    } else if(strcmp(currentStr.c_str(),"-y ")==0){
+      m_operation_flag|=V_OPERATION_YES;
+    } else if(strcmp(currentStr.c_str(),"-Y ")==0){
+      m_operation_flag|=V_OPERATION_YES_ALL;
     } else if(strcmp(currentStr.c_str(),"-d ")==0){
       m_operation_flag|=V_OPERATION_DELETE;
     } else if(strcmp(currentStr.c_str(),"-r ")==0){
@@ -80,4 +84,12 @@ clbool ParameterParser::Parse(clstr str){
     return false;
   }
   return true;
+}
+
+clbool ParameterParser::NeedRequest() const{
+  return (m_operation_flag&0x0000FF00)<V_OPERATION_YES;
+}
+
+clbool ParameterParser::NeedRequestAll() const{
+  return (m_operation_flag&0x0000FF00)<V_OPERATION_YES_ALL;
 }

@@ -4,7 +4,9 @@
 #define V_OPERATION_DELETE (1<<1)
 #define V_OPERATION_CUT (1<<2)
 #define V_OPERATION_COPY (1<<3)
-#define V_VERBOSE (1<<8)
+#define V_OPERATION_YES (1<<8)
+#define V_OPERATION_YES_ALL (1<<9)
+#define V_VERBOSE (1<<24)
 #define V_INITED (1<<31)
 
 class ParameterParser{
@@ -14,6 +16,8 @@ public:
   clbool Parse(clstr str);
 
   clbool IsVerbose()const{ return m_operation_flag&V_VERBOSE; }
+  clbool NeedRequest()const;
+  clbool NeedRequestAll()const;
 
 private:
   clchar GetCharAt_(clstr str,clint index);

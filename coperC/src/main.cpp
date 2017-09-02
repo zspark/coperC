@@ -18,27 +18,23 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include "cllib.h"
-#include "Utils.h"
-#include "Status.h"
-#include "ConfigFileItem.h"
-#include "ConfigParser.h"
-#include "FileCoper.h"
-#include "clPrinter.h"
-#include "clUtil.h"
-
+#include "coper.h"
+#include "parameter_parser.h"
+#include "lexical_analyzer.h"
+#include "grammar_analyzer.h"
 
 using namespace std;
 using namespace cl;
 
-void readTextFileToArray(clCs configFileURL,vector<string>* ret){
+void ReadConfigFile(const clchar* configFileURL,vector<clstr>& out){
   ifstream file_r(configFileURL,ios::in);
   if(file_r){
     while(!file_r.eof()){
       char c[_MAX_PATH];
       file_r.getline(c,_MAX_PATH,'\n');
-      ret->push_back(c);
-
+      if(clstr(c).empty())continue;
+      if(clRegexp::IsStartedWith(c,R"(#)",true))continue;
+      out.push_back(c);
       if(file_r.fail()){
         file_r.clear(file_r.rdstate()&~ifstream::failbit);
       }
@@ -47,39 +43,70 @@ void readTextFileToArray(clCs configFileURL,vector<string>* ret){
   file_r.close();
 }
 
-void run(clCs filename){
+void Run(const clchar* filename){
+  vector<clstr> out;
+  ReadConfigFile(filename,out);
+  Unimportant("Avaliable items of config file : "+clTypeUtil::NumberToString(out.size()),true,false);
 
-  vector<string> cc;
-  readTextFileToArray(filename,&cc);
+  ParameterParser pp;
+  for(cluint i=0;i<out.size();i++){
+    if(clRegexp::IsStartedWith(out[i],"parameter",true)){
+      Unimportant(out[i],true,false);
+      if(!pp.Parse(out[i])){
+        Error("Config file parsing failed!");
+        return;
+      }
+      out.erase(out.begin()+i);
+      break;
+    }
+  }
 
-  Info("配置文件行数："+cl::NumberToString(cc.size()));
+  Unimportant("-----------------------------------------",true,false);
 
+  LexicalAnalyzer la(ConsoleForeground::GRAY,ConsoleForeground::RED);
+  GrammarAnalyzer ga;
+  const cluint n=out.size();
+  for(clint i=0;i<n;i++){
+    clstr s=out[i];
+    if(la.Analyze(s,pp.IsVerbose())){
+      /*
+      vector<cluint> out;
+      if(ga.Analyze(info,out,true)){
+      Info("All Passed!");
+      } else{
+      HighLightText(s,ConsoleForeground::WHITE,out,ConsoleForeground::RED);
+      }
+      */
+    }
+  }
+  /*
   vector<ConfigFileItem> cfis;
   ConfigParser cp;
   cp.parse(&cc,&cfis);
-
-  /*
   FileCoper fc;
   fc.copyStart(&cfis);
 */
 }
 
-int main(int argc,clCs argv[]){
+clint main(clint argc,clchar* argv[]){
   //char * c_title="Coper version:1.0.1";
   //SetConsoleTitle(c_title);
 
 
-  Info("Hello Coper!");
-  Info(argv[0]);
-  Info("-----------------------------------------");
+  Unimportant("Hello Coper! ",false,false);
+  Unimportant(VERSION,true,false);
+  Unimportant("coper.exe URL : "+clstr(argv[0]),true,false);
 
-#if(1)
-  run("./config.txt");
+#if 1
+  const clstr configFileURL("./config.txt");
+  Unimportant("config file URL : "+configFileURL,true,false);
+  Run(configFileURL.c_str());
 #else
   appURL=argv[0];
 
   if(argc==2){
-    run(argv[1]);
+    Unimportant("config file URL : "+argv[1],true,false);
+    Run(argv[1]);
   } else{
     Error("请将配置文件拖入coperC.exe文件");
     //configFileURL="config.txt";

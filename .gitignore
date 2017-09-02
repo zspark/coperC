@@ -21,6 +21,7 @@
 *.lastbuildstate
 *.swp
 *.un~
+*.txt~
 x64/
 external/
 Debug/

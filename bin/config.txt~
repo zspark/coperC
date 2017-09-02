@@ -1,24 +1,27 @@
-#Version.0.2
-#说明：
-#有‘#’的表示注释行：
-#所有目录层级关系使用斜线：/
-#解析顺序：
-# * 
-
-
-root.E./copertest/root/
-target.E./copertest/target/
-#
-aa/>>^[^\\/\*:\?"<>\|]+$
-testdoc2/
-testdoc3/testdoc6/aaa
-aaaa/
-testdoc3/[testpng.png|testtxt1|sss.png|aaa/]
-testdoc5/[test_001/-test_004/]
-testdoc5/[test_001.txt-test_004.txt]
-samenames
-[samename|sfsfs.txt]
-testdoc4/[.txt]
-testtxt2.txt
-[a.txt|A/|B/C/b.jpg]
-.jpg
+parameter -v -x -r "./root/" -t "E:/copertest/target/"
+aaa
+.png
+*.png
+*.*
+*.
+.*
+*
+xxx.jxpeg
+bb/xxx.jxpeg
+bb/*.extension
+bb/aab3*.extension
+bb/this is file nameN.*
+bb/no extention file name
+>
+<>
+aa/<ggg|a*>.pn
+aa/<***|ss>.pn
+<ss>pn
+<ss>.    pn
+<ss>    .pn
+<ss>    .     pn
+a.a/<*|ss>.pn
+aa/<*|ss>.*
+aa/<ggg|s>
+aa<s>.png
+aa/>>^[^\\"/\*:\?<>\|]+$

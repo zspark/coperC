@@ -22,7 +22,7 @@ clint main(){
 
   vector<clstr> items;
   //items.push_back("sfsfsf/ as ffge-sfsf_sge+.zip/b*/<ab?c+|dddd|!|  aaa    .txt>png   ");
-  //items.push_back("xxx.jxpeg");//r
+  //items.push_back("xxx.jxpeg");//o
   //items.push_back("bb/xxx.jxpeg");//o
   //items.push_back("bb/*.extension");//o
   //items.push_back("bb/aab3*.extension");//x
@@ -97,7 +97,7 @@ clint main(){
   GrammarAnalyzer ga;
   for(clint i=0;i<items.size();i++){
     clstr s=items[i];
-    if(la.Analyze(s,false)){
+    if(la.Analyze(s,true)){
       /*
       vector<cluint> out;
       if(ga.Analyze(info,out,true)){

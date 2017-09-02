@@ -1,10 +1,15 @@
 #pragma once
 
-#include "clTypes.h"
+#include "cllib.h"
+#include "clPrinter.h"
+#include "clRegexpUtil.h"
 
+#define VERSION "V0.3"
+
+#define MARK_PARAMETER "parameter"
 #define MARK_ROOT "root"
 #define MARK_TARGET "target"
-#define MARK_COMMET "#"
+#define MARK_SHARP "#"
 #define MARK_START "*"
 #define MARK_SLASH "/"
 #define MARK_LEFT_BRACKET "<"
@@ -12,11 +17,15 @@
 #define MARK_DOUBLE_RIGHT_BRACKET ">>"
 #define MARK_DOT "."
 #define MARK_V_LINE "|"
+#define C_MARK_SHARP '#'
 #define C_MARK_V_LINE '|'
 #define C_MARK_SLASH '/'
 #define C_MARK_LEFT_BRACKET '<'
 #define C_MARK_RIGHT_BRACKET '>'
 #define WINDOWS_ALLOWED_NAME R"(^[^\\/\*:\?"<>\|]+$)"
+
+#define str_(s) #s
+#define STR(s) str_(s)
 
 clbool IsFolderKeyword(const clstr& str);
 clbool IsVLineKeyword(const clstr& str);

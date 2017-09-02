@@ -72,7 +72,7 @@ void LexicalAnalyzer::ParseToLexicalInfo_(){
     default:
       clstr subS=m_rawString.substr(i);
       vector<clstr> out;
-      clRegexp::GetFirstMatch(subS,R"([^<>\|/"]+)",out,true);
+      clRegexp::GetFirstMatch(subS,R"([^<>\|/]+)",out,true);
       subS=out[0];
       m_vecInfos.emplace_back(subS,i,LexicalInfoType::NAME);
       i+=subS.size();

@@ -80,7 +80,7 @@ clbool ParameterParser::Parse(clstr str){
   if(FolderAndFile::IsFolderExist(m_rootPath))m_operation_flag|=V_INITED;
   else{
     m_operation_flag&=~V_INITED;
-    Error("root path is NOT correct in your file system.");
+    Error("root path is NOT exist in your file system.");
     return false;
   }
   return true;

@@ -1,4 +1,4 @@
-parameter v -y -Y -x -r "./root/" -t "./root2/"
+parameter v -y Y -x -r "./aaroot/" -t "./root2/"
 aaa
 .png
 *.png

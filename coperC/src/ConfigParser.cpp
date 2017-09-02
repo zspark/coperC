@@ -18,7 +18,8 @@
 #include <string>
 #include <math.h>
 #include <stdlib.h>
-#include "debugger.h"
+#include "clTypes.h"
+#include "clPrinter.h"
 #include "ConfigParser.h"
 #include "Utils.h"
 #include "ConfigFileItem.h"
@@ -30,9 +31,9 @@ using namespace cl;
 class Range{
 public:
   string samePart="";
-  int differentPartLength=-1;
-  int fromNumber=0;
-  int endNumber=0;
+  clI differentPartLength=-1;
+  clI fromNumber=0;
+  clI endNumber=0;
   string extension=EXT_ALL;
 
 public:
@@ -43,12 +44,12 @@ public:
     string s0(arr[0]);
     string s1(arr[1]);
 
-    int l(fmin(s0.length(),s1.length()));
+    clI l(fmin(s0.length(),s1.length()));
 
-    int dIndex=-1;
+    clI dIndex=-1;
     string::iterator s0it(s0.begin());
     string::iterator s1it(s1.begin());
-    for(int i=0;i<l;i++){
+    for(clI i=0;i<l;i++){
       if(*s0it!=*s1it){
         dIndex=i;
         break;
@@ -80,31 +81,30 @@ void ConfigParser::parse(vector<string>* c,vector<ConfigFileItem>* itemArray){
   totalResCount=0;
 */
   for(vector<string>::iterator it=c->begin();it!=c->end();it++){
-    if(it->find_first_of(COMMET_MARK)==0||it->length()==0)continue;
-    if(it->find(ROOT)==0){
+    if(it->length==0)continue;
+    if(IsStartedWithCommentMark(*it))continue;
+
+    if(IsStartedWithRootMark(*it)){
       root=it->substr(it->find_first_of(MARK_COLON)+1);
       Info("Root URL is: \""+root);
-      continue;
-    } else if(it->find(TARGET)==0){
+    } else if(IsStartedWithTargetMark(*it)){
       target=it->substr(it->find_first_of(MARK_COLON)+1);
       Info("Target URL is: \""+target);
-      continue;
+    } else{
+      clI lastBackSlashIndex(it->find_last_of(BACK_SLASH,it->find_first_of(MARK_BIG_BRACKET)));
+      ConfigFileItem *cfi=new ConfigFileItem(*it);
+      string sub(it->substr(0,lastBackSlashIndex+1));
+      cfi->setRelativePath(sub);
+      sub=it->substr(lastBackSlashIndex+1,it->length()-lastBackSlashIndex);
+      cfi->setLastContentPart(sub);
+      // cout<<"========================log=========================="<<endl;
+       //cout<<"lastBackSlashIndex:"<<lastBackSlashIndex<<endl;
+     //  cout<<cfi->getRelativePath()<<" "<<cfi->getLastContentPart()<<endl;
+      // cout<<"========================log_over=========================="<<endl;
+
+      parseItem(cfi);
+      itemArray->push_back(*cfi);
     }
-
-    int lastBackSlashIndex(it->find_last_of(BACK_SLASH,it->find_first_of(MARK_BIG_BRACKET)));
-    ConfigFileItem *cfi=new ConfigFileItem(*it);
-    string sub(it->substr(0,lastBackSlashIndex+1));
-    cfi->setRelativePath(sub);
-    sub=it->substr(lastBackSlashIndex+1,it->length()-lastBackSlashIndex);
-    cfi->setLastContentPart(sub);
-    // cout<<"========================log=========================="<<endl;
-     //cout<<"lastBackSlashIndex:"<<lastBackSlashIndex<<endl;
-   //  cout<<cfi->getRelativePath()<<" "<<cfi->getLastContentPart()<<endl;
-    // cout<<"========================log_over=========================="<<endl;
-
-    parseItem(cfi);
-    itemArray->push_back(*cfi);
-
   }
 }
 
@@ -214,7 +214,7 @@ void ConfigParser::pushDirectoryFilesIntoItem(ConfigFileItem* item,const string 
 void ConfigParser::parseRange(const string& range,const string& ext,ConfigFileItem* item){
   Range r(range,ext);
   string fileNameN("");
-  for(int i=r.fromNumber;i<=r.endNumber;i++){
+  for(clI i=r.fromNumber;i<=r.endNumber;i++){
     if(r.differentPartLength==-1){
       //自由长度；
       fileNameN=r.samePart;

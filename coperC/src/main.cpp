@@ -18,48 +18,73 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include "cllib.h"
 #include "Utils.h"
 #include "Status.h"
 #include "ConfigFileItem.h"
 #include "ConfigParser.h"
 #include "FileCoper.h"
-#include "debugger.h"
+#include "clPrinter.h"
+#include "clUtil.h"
 
 
 using namespace std;
+using namespace cl;
 
-void run(char* filename){
+void readTextFileToArray(clCs configFileURL,vector<string>* ret){
+  ifstream file_r(configFileURL,ios::in);
+  if(file_r){
+    while(!file_r.eof()){
+      char c[_MAX_PATH];
+      file_r.getline(c,_MAX_PATH,'\n');
+      ret->push_back(c);
+
+      if(file_r.fail()){
+        file_r.clear(file_r.rdstate()&~ifstream::failbit);
+      }
+    }
+  }
+  file_r.close();
+}
+
+void run(clCs filename){
 
   vector<string> cc;
   readTextFileToArray(filename,&cc);
 
-  cl::Info("配置文件行数："+cc.size());
+  Info("配置文件行数："+cl::NumberToString(cc.size()));
 
   vector<ConfigFileItem> cfis;
   ConfigParser cp;
   cp.parse(&cc,&cfis);
 
+  /*
   FileCoper fc;
   fc.copyStart(&cfis);
+*/
 }
 
-int main(int argc,char * argv[]){
+int main(int argc,clCs argv[]){
   //char * c_title="Coper version:1.0.1";
   //SetConsoleTitle(c_title);
 
 
-  cl::Info("Hello Coper!");
-  cl::Info(argv[0]);
-  cl::Info("-----------------------------------------");
+  Info("Hello Coper!");
+  Info(argv[0]);
+  Info("-----------------------------------------");
+
+#if(1)
+  run("./config.txt");
+#else
   appURL=argv[0];
 
   if(argc==2){
     run(argv[1]);
   } else{
-    cl::Error("请将配置文件拖入coperC.exe文件");
+    Error("请将配置文件拖入coperC.exe文件");
     //configFileURL="config.txt";
   }
-
+#endif
   system("pause");
   return 0;
 }

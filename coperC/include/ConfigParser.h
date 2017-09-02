@@ -20,6 +20,16 @@
 #include "ConfigFileItem.h"
 #include <vector>
 
+
+/**
+ 记录的是文件中有效的一条配置
+ */
+struct ConfigFileItem{
+  //must be ended with /
+  string relativePath;
+
+};
+
 class ConfigParser{
 
   void parseItem(ConfigFileItem *item);

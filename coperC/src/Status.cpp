@@ -26,14 +26,4 @@ string target="";
 
 char* appURL;
 
-string const EXT_ALL="*";
-string const ROOT("root");
-string const TARGET="target";
-string const COMMET_MARK="#";
-string const BACK_SLASH="\\";
-string const MARK_BIG_BRACKET="{";
-string const MARK_DOT(".");
-string const MARK_COLON(":");
-const string MARK_V_LINE("|");
-string const MARK_WAVE("~");
 

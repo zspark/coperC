@@ -15,7 +15,7 @@
 */
 #include "FileCoper.h"
 #include <string>
-#include "debugger.h"
+#include "clPrinter.h"
 #include "Status.h"
 #include "ConfigFileItem.h"
 #include "Utils.h"

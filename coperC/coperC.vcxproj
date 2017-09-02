@@ -19,17 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ConfigFileItem.cpp" />
-    <ClCompile Include="src\ConfigParser.cpp" />
-    <ClCompile Include="src\FileCoper.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Status.cpp" />
-    <ClCompile Include="src\Utils.cpp" />
+    <ClCompile Include="src\coper.cpp" />
+    <ClCompile Include="src\grammar_analyzer.cpp" />
+    <ClCompile Include="src\main2.cpp" />
+    <ClCompile Include="src\lexical_analyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ConfigFileItem.h" />
     <ClInclude Include="include\ConfigParser.h" />
+    <ClInclude Include="include\coper.h" />
     <ClInclude Include="include\FileCoper.h" />
+    <ClInclude Include="include\grammar_analyzer.h" />
+    <ClInclude Include="include\lexical_analyzer.h" />
     <ClInclude Include="include\Status.h" />
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>

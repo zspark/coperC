@@ -24,13 +24,9 @@
 #include <math.h>
 #include "Utils.h"
 #include "Status.h"
-#include "debugger.h"
+#include "clPrinter.h"
 
 using namespace std;
-#define R_OK 4 /* Test for read permission. */
-#define W_OK 2 /* Test for write permission. */
-#define X_OK 1 /* Test for execute permission. */
-#define F_OK 0 /* Test for existence. */
 
 class CBrowseDir{
   //存放初始目录的绝对路径，以'\'结尾
@@ -89,30 +85,6 @@ char* read(char *fileURL){
   return c;
 }
 
-void readTextFileToArray(char* configFileURL,vector<string>* ret){
-  ifstream file_r(configFileURL,ios::in);
-  if(file_r){
-    while(!file_r.eof()){
-      char c[_MAX_PATH];
-      file_r.getline(c,_MAX_PATH,'\n');
-      ret->push_back(*new string(c));
-
-      if(file_r.fail()){
-        file_r.clear(file_r.rdstate()&~ifstream::failbit);
-      }
-    }
-  }
-  file_r.close();
-}
-
-bool checkFileExistance(const string &fileURL){
-  return !_access(fileURL.c_str(),R_OK);
-}
-
-bool checkDirectoryExistance(const string &dirURL){
-  return !_access(dirURL.c_str(),F_OK);
-}
-
 /**
  *统计fileURL所指的本地目录是否没有文件存在
  *有子目录存在不算；
@@ -134,108 +106,4 @@ void getDirectoryFiles(const string &directoryURL,const char *filespec,vector<st
     cb.BrowseDir(filespec,fileNames);
   }
 }
-
-void copyFileTo(string& fileURL,string & folderURL){
-  string cmd("copy "+fileURL+" "+folderURL);
-  system(cmd.c_str());
-}
-
-void createDirectory(string &directoryURL){
-  string cmd("md "+directoryURL);
-  system(cmd.c_str());
-}
-
-bool isExtensionRight(const string& fileName,const string& ext){
-  int index(fileName.find(ext));
-  return index>=0&&index==fileName.length()-ext.length();
-}
-
-bool isStringAllDecNumber(const string& str){
-  for(int i=0;i<str.size();i++){
-    if((str.at(i)>'9')||(str.at(i)<'0'))
-      return  false;
-  }
-  return true;
-}
-
-string fixToLength(int num,int l){
-  if(numberLength(num)>l){
-    cout<<"试图将一个更长的数字调整为长度较短的字符串，函数终止！"<<endl;
-    return "";
-  }
-
-  char f[10];
-  sprintf(f,"%%0%dd",l);
-
-  char c[10];
-  sprintf(c,f,num);
-
-  string s(c);
-  return s;
-
-}
-
-int numberLength(int a){
-  int flag=0;
-  while(a){
-    a/=10;
-    flag++;
-  }
-  return flag;
-}
-
-void split(const string& s,const string& delim,vector< string >* ret){
-  size_t last=0;
-  size_t index=s.find_first_of(delim,last);
-  while(index!=string::npos){
-    ret->push_back(s.substr(last,index-last));
-    last=index+1;
-    index=s.find_first_of(delim,last);
-  }
-  if(index-last>0){
-    ret->push_back(s.substr(last,index-last));
-  }
-}
-
-string& trim(string &s){
-  if(s.empty()){
-    return s;
-  }
-
-  s.erase(0,s.find_first_not_of(" "));
-  s.erase(s.find_last_not_of(" ")+1);
-  return s;
-}
-
-string&   replace_all(string&   str,const   string&   old_value,const   string&   new_value){
-  string::size_type   pos(0);
-  while(true){
-    if((pos=str.find(old_value,pos))!=string::npos){
-      str.replace(pos,old_value.length(),new_value);
-      pos+=new_value.length();
-    } else   break;
-  }
-  return   str;
-}
-
-void copyFile(const string & relativePath,const string & fileName){
-  string fileURL(root+relativePath+fileName);
-  string folderURL(target+relativePath+fileName);
-  folderURL=folderURL.substr(0,folderURL.find_last_of("\\")+1);
-
-  if(!checkDirectoryExistance(folderURL)){
-    createDirectory(folderURL);
-  }
-
-  cl::Warning(fileURL);
-
-  copyFileTo(fileURL,folderURL);
-}
-
-
-
-
-
-
-
 

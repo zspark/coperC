@@ -17,35 +17,30 @@
 #define UTILS_H_INCLUDED
 #include <string>
 #include <vector>
+#include "clRegexpUtil.h"
 
 using namespace std;
 
-int _stat(const char* path,struct _stat* buffer);
-//////////////////////////file/////////////////////////////
+#define ROOT "root"
+#define TARGET "target"
+#define COMMET_MARK "#"
+#define EXT_ALL "*"
+#define BACK_SLASH "\\"
+#define MARK_BIG_BRACKET "{"
+#define MARK_DOT "."
+#define MARK_COLON ":"
+#define MARK_V_LINE "|"
+#define MARK_WAVE "~"
+
+
+#define IsStartedWithCommentMark(str) (cl::clRegexp::IsStartedWith(str,COMMET_MARK,false))
+#define IsStartedWithRootMark(str) (cl::clRegexp::IsStartedWith(str,ROOT,false))
+#define IsStartedWithTargetMark(str) (cl::clRegexp::IsStartedWith(str,TARGET,false))
+
 char* read(char* fileURL);
-void readTextFileToArray(char* fileURL,vector<string>* ret);
-bool checkFileExistance(const string &fileURL);
-bool checkDirectoryExistance(const string &dirURL);
-void copyFileTo(string& fileURL,string & folderURL);
+
 bool isDirectoryNoFiles(string &fileURL);
 
 void getDirectoryFiles(const string &directoryURL,const char *filespec,vector<string>* fileNames);
-
-void createDirectory(string &directoryURL);
-
-bool isExtensionRight(const string& fileName,const string& ext);
-
-int numberLength(int a);
-
-bool isStringAllDecNumber(const string &str);
-
-string fixToLength(int num,int l);
-
-void split(const string& s,const string& delim,vector<string>* ret);
-
-string& trim(string &s);
-string&   replace_all(string&   str,const   string&   old_value,const   string&   new_value);
-
-void copyFile(const string & relativePath,const string & fileName);
 
 #endif // UTILS_H_INCLUDED

@@ -9,7 +9,7 @@
 root.E./copertest/root/
 target.E./copertest/target/
 #
-aa/>>^[^\\"/\*:\?<>\|]+$
+aa/>>^[^\\/\*:\?"<>\|]+$
 testdoc2/
 testdoc3/testdoc6/aaa
 aaaa/

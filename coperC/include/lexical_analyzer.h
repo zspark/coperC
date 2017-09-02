@@ -3,15 +3,23 @@
 #include <vector>
 #include "cllib.h"
 
+namespace LexicalInfoType{
+enum infotype{
+  KEY_WORD=0,
+  NAME,
+  REGEXP,
+};
+}
+
 struct LexicalInfo{
-  LexicalInfo(clstr s,cluint index,clbool keyword)
-    :rawStr(s),startIndex(index),rawStrLen(s.size()),isKeyword(keyword){
+  LexicalInfo(clstr s,cluint index,LexicalInfoType::infotype t)
+    :rawStr(s),startIndex(index),rawStrLen(s.size()),type(t){
     fixedStr=s;
   }
   const clstr rawStr;
   const cluint startIndex;
   const cluint rawStrLen;
-  const clbool isKeyword;
+  const LexicalInfoType::infotype type;
   clstr fixedStr;
 };
 

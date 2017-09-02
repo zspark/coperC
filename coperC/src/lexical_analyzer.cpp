@@ -44,24 +44,37 @@ clbool LexicalAnalyzer::Analyze(clstr str,clbool verbose){
 
 void LexicalAnalyzer::ParseToLexicalInfo_(){
   clchar currentChar;
+  clchar next;
   const cluint n=m_rawString.length();
   for(clint i=0;i<n;){
     currentChar=m_rawString[i];
     switch(currentChar){
-    case '<':
-    case '>':
-    case '|':
-    case '/':
-    case '"':
-      m_vecInfos.emplace_back(clstr(&currentChar,1),i,true);
+    case C_MARK_LEFT_BRACKET:
+    case C_MARK_V_LINE:
+    case C_MARK_SLASH:
+      m_vecInfos.emplace_back(clstr(&currentChar,1),i,LexicalInfoType::KEY_WORD);
       i+=1;
+      break;
+    case C_MARK_RIGHT_BRACKET:
+      next=m_rawString[i+1];
+      if(next && next==C_MARK_RIGHT_BRACKET){
+        m_vecInfos.emplace_back(MARK_DOUBLE_RIGHT_BRACKET,i,LexicalInfoType::KEY_WORD);
+        i+=2;
+        // the following are all regexp context;
+        clstr subS=m_rawString.substr(i);
+        m_vecInfos.emplace_back(subS,i,LexicalInfoType::REGEXP);
+        return;
+      } else{
+        m_vecInfos.emplace_back(clstr(&currentChar,1),i,LexicalInfoType::KEY_WORD);
+        i+=1;
+      }
       break;
     default:
       clstr subS=m_rawString.substr(i);
       vector<clstr> out;
       clRegexp::GetFirstMatch(subS,R"([^<>\|/"]+)",out,true);
       subS=out[0];
-      m_vecInfos.emplace_back(subS,i,false);
+      m_vecInfos.emplace_back(subS,i,LexicalInfoType::NAME);
       i+=subS.size();
       break;
     }
@@ -74,7 +87,7 @@ clbool LexicalAnalyzer::ValidateNames_(){
   cluint i=0;
   for(;i<n;i++){
     currentLex=&m_vecInfos[i];
-    if(!currentLex->isKeyword){
+    if(currentLex->type==LexicalInfoType::NAME){
       // normal string;
       if(IsCoperAllowedName(currentLex->rawStr)){
         clstr tmp;

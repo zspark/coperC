@@ -28,6 +28,8 @@ clint main(){
   //items.push_back("bb/aab3*.extension");//x
   //items.push_back("bb/this is file nameN.*");//o
   //items.push_back("bb/no extention file name");//o
+  items.push_back(R"(>)");//Lo Gx
+  items.push_back(R"(<>)");//Lo Go
   items.push_back(R"(aa/<ggg|a*>.pn)");//x
   items.push_back(R"(aa/<***|ss>.pn)");//x
   items.push_back(R"(<ss>pn)");//o
@@ -36,8 +38,9 @@ clint main(){
   items.push_back(R"(<ss>    .     pn)");//o
   items.push_back(R"(a.a/<*|ss>.pn)");//o
   items.push_back(R"(aa/<*|ss>.*)");//o
-  //items.push_back(R"(aa/<ggg|s>)");//o
+  items.push_back(R"(aa/<ggg|s>)");//o
   items.push_back(R"(aa<s>.png)");//Lo Gx
+  items.push_back("aa/>>^[^\\\\\"/\\*:\\?<>\\|]+$");//o
   //items.push_back(R"(aa/<ss|sfsfsf|ggg.png|s>.    sss)");//o
   //items.push_back("/");
   //items.push_back("a//");
@@ -94,7 +97,7 @@ clint main(){
   GrammarAnalyzer ga;
   for(clint i=0;i<items.size();i++){
     clstr s=items[i];
-    if(la.Analyze(s,true)){
+    if(la.Analyze(s,false)){
       /*
       vector<cluint> out;
       if(ga.Analyze(info,out,true)){

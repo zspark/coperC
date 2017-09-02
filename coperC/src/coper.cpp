@@ -9,10 +9,6 @@ window系统规定，目录，文件名不能含有以下字符：
 using namespace std;
 using namespace cl;
 
-clbool IsAnyKeyword(const clstr& str){
-  return clRegexp::Match(str,R"(^[/\[\]:|]$)",true);
-}
-
 clbool IsFolderKeyword(const clstr& str){
   return clRegexp::Match(str,R"(^/$)",true);
 }
@@ -35,20 +31,6 @@ clbool IsStarOnly(const clstr & str){
 
 clbool IsLeftBracketKeyword(const clstr& str){
   return clRegexp::Match(str,R"(^<$)",true);
-}
-
-clbool checkNameGrammar(const clstr & str){
-  vector<cluint> pos;
-  if(clRegexp::GetIndices(str,R"(\*)",pos)){
-    if(pos.size()>1){
-      for(cluint i=1;i<pos.size();i++){
-        if(pos[i]-pos[i-1]==1){
-          return false;
-        }
-      }
-    }
-  }
-  return true;
 }
 
 clbool IsNameWithoutDotLegal(const clstr & str){

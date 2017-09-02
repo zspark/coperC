@@ -30,10 +30,14 @@ clint main(){
   //items.push_back("bb/no extention file name");//o
   items.push_back(R"(aa/<ggg|a*>.pn)");//x
   items.push_back(R"(aa/<***|ss>.pn)");//x
-  items.push_back(R"(aa/<*|ss>.pn)");//o
+  items.push_back(R"(<ss>pn)");//o
+  items.push_back(R"(<ss>.    pn)");//o
+  items.push_back(R"(<ss>    .pn)");//o
+  items.push_back(R"(<ss>    .     pn)");//o
+  items.push_back(R"(a.a/<*|ss>.pn)");//o
   items.push_back(R"(aa/<*|ss>.*)");//o
   //items.push_back(R"(aa/<ggg|s>)");//o
-  //items.push_back(R"(aa<ss|sfsfsf|ggg.png|s>.sss)");//x
+  items.push_back(R"(aa<s>.png)");//Lo Gx
   //items.push_back(R"(aa/<ss|sfsfsf|ggg.png|s>.    sss)");//o
   //items.push_back("/");
   //items.push_back("a//");

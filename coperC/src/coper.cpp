@@ -37,14 +37,6 @@ clbool IsLeftBracketKeyword(const clstr& str){
   return clRegexp::Match(str,R"(^<$)",true);
 }
 
-clbool IsFolderName(const clstr& str){
-  return clRegexp::Match(str,R"(^[a-zA-Z\*\+\?\-_\. !]+$)",true);
-}
-
-clbool IsFileName(const clstr& str){
-  return clRegexp::Match(str,R"(^[a-zA-Z\*\+\?\-_\. !]+$)",true);
-}
-
 clbool checkNameGrammar(const clstr & str){
   vector<cluint> pos;
   if(clRegexp::GetIndices(str,R"(\*)",pos)){
@@ -59,39 +51,20 @@ clbool checkNameGrammar(const clstr & str){
   return true;
 }
 
-clbool IsExtensionName(const clstr& str){
-  return clRegexp::Match(str,R"(^[a-zA-Z\*\+\?\-_\. !]+$)",true);
+clbool IsNameWithoutDotLegal(const clstr & str){
+  if(IsStarOnly(str))return true;
+  return clRegexp::Match(str,WINDOWS_ALLOWED_NAME,true);
 }
 
-clbool IsPotentialFolderName(const clstr & str){
-  return clRegexp::Match(str,R"(^[^\\/\*:\?"<>|]+$)",true);
-}
-
-clbool IsPotentialFileName(const clstr & str){
-  clbool result=true;
+clbool IsCoperAllowedName(const clstr& str){
   const auto index=str.find_last_of('.');
-  if(index!=string::npos){
-    const clstr nameN=str.substr(0,index);
-    result=IsPotentialCommonExtensionName(nameN);
-    if(!result)return false;
-
-    const clstr extension=str.substr(index+1);
-    result=IsPotentialCommonExtensionName(extension);
-    if(!result)return false;
-  } else{
+  if(index==string::npos){
     //file nameN;
-    result=IsPotentialCommonExtensionName(str);
-    if(!result)return false;
+    return IsNameWithoutDotLegal(str);
+  } else{
+    const clstr nameN=str.substr(0,index);
+    const clstr extension=str.substr(index+1);
+    if(IsNameWithoutDotLegal(nameN)&&
+      IsNameWithoutDotLegal(extension))return true;
   }
-}
-
-clbool IsPotentialCommonExtensionName(const clstr& str){
-  cluint len=str.length();
-  clbool result=true;
-  if(len>1)
-    result=clRegexp::Match(str,R"(^[^\\/\*:\?"<>|]+$)",true);
-  else if(len==1){
-    result=IsStarOnly(str);
-  }
-  return result;
 }

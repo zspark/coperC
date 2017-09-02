@@ -19,6 +19,8 @@
 *.tlog
 *.log
 *.lastbuildstate
+*.swp
+*.un~
 x64/
 external/
 Debug/

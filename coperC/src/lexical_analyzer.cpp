@@ -11,7 +11,7 @@ LexicalAnalyzer::LexicalAnalyzer(cluint defaultColor,cluint highlightColor)
   :m_defaultPrintColor(defaultColor),m_highLightPrintColor(highlightColor){}
 
 LexicalAnalyzer::~LexicalAnalyzer(){
-  m_vecInfos.clear();
+  ResetLocal_();
 }
 
 clbool LexicalAnalyzer::Analyze(clstr str,clbool verbose){
@@ -20,9 +20,7 @@ clbool LexicalAnalyzer::Analyze(clstr str,clbool verbose){
   m_verbosePrint=verbose;
 
   if(m_verbosePrint){
-    NewLine();
     Info("Lexical analysing start...");
-    Info("Config string is:\""+str+"\"");
   }
   ParseToLexicalInfo_();
   if(ValidateNames_()){
@@ -52,20 +50,20 @@ void LexicalAnalyzer::ParseToLexicalInfo_(){
     case C_MARK_LEFT_BRACKET:
     case C_MARK_V_LINE:
     case C_MARK_SLASH:
-      m_vecInfos.emplace_back(clstr(&currentChar,1),i,LexicalInfoType::KEY_WORD);
+      m_vecInfos.push_back(new LexicalInfo(clstr(&currentChar,1),i,LexicalInfoType::KEY_WORD));
       i+=1;
       break;
     case C_MARK_RIGHT_BRACKET:
       next=m_rawString[i+1];
       if(next && next==C_MARK_RIGHT_BRACKET){
-        m_vecInfos.emplace_back(MARK_DOUBLE_RIGHT_BRACKET,i,LexicalInfoType::KEY_WORD);
+        m_vecInfos.push_back(new LexicalInfo(MARK_DOUBLE_RIGHT_BRACKET,i,LexicalInfoType::KEY_WORD));
         i+=2;
         // the following are all regexp context;
         clstr subS=m_rawString.substr(i);
-        m_vecInfos.emplace_back(subS,i,LexicalInfoType::REGEXP);
+        m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::REGEXP));
         return;
       } else{
-        m_vecInfos.emplace_back(clstr(&currentChar,1),i,LexicalInfoType::KEY_WORD);
+        m_vecInfos.push_back(new LexicalInfo(clstr(&currentChar,1),i,LexicalInfoType::KEY_WORD));
         i+=1;
       }
       break;
@@ -74,7 +72,7 @@ void LexicalAnalyzer::ParseToLexicalInfo_(){
       vector<clstr> out;
       clRegexp::GetFirstMatch(subS,R"([^<>\|/]+)",out,true);
       subS=out[0];
-      m_vecInfos.emplace_back(subS,i,LexicalInfoType::NAME);
+      m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::NAME));
       i+=subS.size();
       break;
     }
@@ -86,16 +84,16 @@ clbool LexicalAnalyzer::ValidateNames_(){
   const cluint n=m_vecInfos.size();
   cluint i=0;
   for(;i<n;i++){
-    currentLex=&m_vecInfos[i];
+    currentLex=m_vecInfos[i];
     if(currentLex->type==LexicalInfoType::NAME){
       // normal string;
       if(IsCoperAllowedName(currentLex->rawStr)){
         clstr tmp;
-        const LexicalInfo* info=GetLexicalInfo(i-1);
+        const LexicalInfo* info=GetLexicalInfo_(i-1);
         if(info && IsRightBracketKeyword(info->rawStr)){
           // common extension name;
           tmp=clTypeUtil::StringTrimLeft(currentLex->rawStr);
-          if(!clRegexp::IsStartedWith(tmp,R"(^\.)")){
+          if(!clRegexp::IsStartedWith(tmp,R"(.)")){
             tmp="."+tmp;
           }
         } else{
@@ -117,12 +115,13 @@ clbool LexicalAnalyzer::ValidateNames_(){
 void LexicalAnalyzer::ResetLocal_(){
   m_rawString="";
   m_verbosePrint=false;
+  for(LexicalInfo* l: m_vecInfos) delete l;
   m_vecInfos.clear();
 }
 
-LexicalInfo* LexicalAnalyzer::GetLexicalInfo(clint index){
+LexicalInfo* LexicalAnalyzer::GetLexicalInfo_(clint index){
   if(index>=m_vecInfos.size()||index<0)return nullptr;
-  return &m_vecInfos[index];
+  return m_vecInfos[index];
 }
 
 inline void LexicalAnalyzer::PrintFixedName_(clstr s,LexicalInfo* info){

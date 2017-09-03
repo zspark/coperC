@@ -25,6 +25,10 @@ clbool IsRightBracketKeyword(const clstr& str){
   return clRegexp::Match(str,R"(^>$)",true);
 }
 
+clbool IsDoubleRightBracketKeyword(const clstr& str){
+  return clRegexp::Match(str,R"(^>>$)",true);
+}
+
 clbool IsStarOnly(const clstr & str){
   return clRegexp::Match(str,R"(^\*$)",true);
 }
@@ -48,5 +52,6 @@ clbool IsCoperAllowedName(const clstr& str){
     const clstr extension=str.substr(index+1);
     if(IsNameWithoutDotLegal(nameN)&&
       IsNameWithoutDotLegal(extension))return true;
+    return false;
   }
 }

@@ -50,16 +50,22 @@ void Run(const clchar* filename){
   Unimportant("Avaliable items of config file : "+clTypeUtil::NumberToString(out.size()),true,false);
 
   ParameterParser pp;
+  bool goonFlag=false;
   for(cluint i=0;i<out.size();i++){
     if(clRegexp::IsStartedWith(out[i],"parameter",true)){
       Unimportant(out[i],true,false);
       if(!pp.Parse(out[i])){
-        Error("Config file parsing failed!");
+        Error("parameter itme parsing failed!");
         return;
       }
       out.erase(out.begin()+i);
+      goonFlag=true;
       break;
     }
+  }
+  if(!goonFlag){
+    Error("There is no parameter item exist, please check your config file.");
+    return;
   }
 
   Unimportant("-----------------------------------------",true,false);
@@ -68,20 +74,27 @@ void Run(const clchar* filename){
 
   LexicalAnalyzer la(ConsoleForeground::GRAY,ConsoleForeground::RED);
   GrammarAnalyzer ga;
+  cluint successCount=0;
   const cluint n=out.size();
   for(clint i=0;i<n;i++){
     clstr s=out[i];
+    if(pp.IsVerbose()){
+      NewLine();
+      Unimportant(s,true,false);
+    }
     if(la.Analyze(s,pp.IsVerbose())){
-      /*
-      vector<cluint> out;
-      if(ga.Analyze(info,out,true)){
-      Info("All Passed!");
+      if(ga.Analyze(s,la.GetLexicalInfoVec(),pp.IsVerbose())){
+        successCount++;
       } else{
-      HighLightText(s,ConsoleForeground::WHITE,out,ConsoleForeground::RED);
+        //HighLightText(s,ConsoleForeground::WHITE,out,ConsoleForeground::RED);
       }
+      /*
       */
     }
   }
+  clchar c[256];
+  sprintf_s(c,"Analysing finished ( passed/total ) : %d/%d",successCount,n);
+  Info(c);
   /*
   vector<ConfigFileItem> cfis;
   ConfigParser cp;

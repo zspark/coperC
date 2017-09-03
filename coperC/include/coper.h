@@ -22,7 +22,7 @@
 #define C_MARK_SLASH '/'
 #define C_MARK_LEFT_BRACKET '<'
 #define C_MARK_RIGHT_BRACKET '>'
-#define WINDOWS_ALLOWED_NAME R"(^[^\\/\*:\?"<>\|]+$)"
+#define WINDOWS_ALLOWED_NAME R"(^[^\\/\*:\?"<>\|]*$)"
 
 #define str_(s) #s
 #define STR(s) str_(s)
@@ -32,6 +32,7 @@ clbool IsVLineKeyword(const clstr& str);
 clbool IsStarOnly(const clstr& str);
 clbool IsLeftBracketKeyword(const clstr& str);
 clbool IsRightBracketKeyword(const clstr& str);
+clbool IsDoubleRightBracketKeyword(const clstr& str);
 
 
 clbool IsNameWithoutDotLegal(const clstr& str);

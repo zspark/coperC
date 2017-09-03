@@ -9,7 +9,10 @@
 using namespace std;
 using namespace cl;
 
-GrammarAnalyzer::GrammarAnalyzer(){}
+#define PrintGrammarError(s,info) PrintError(s,info,m_sRawStr,m_defaultPrintColor,m_highLightPrintColor);
+
+GrammarAnalyzer::GrammarAnalyzer(cluint defaultColor,cluint highlightColor)
+  :m_defaultPrintColor(defaultColor),m_highLightPrintColor(highlightColor){}
 
 GrammarAnalyzer::~GrammarAnalyzer(){
   ResetLocal_();
@@ -81,45 +84,48 @@ clbool GrammarAnalyzer::AnalyzeKeyword_(cluint currentOffset){
 }
 
 clbool GrammarAnalyzer::AnalyzeKeywordFolder_(cluint currentOffset){
+  const LexicalInfo* info=GetLexicalInfoAt_(currentOffset);
   const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
   if(m_uBracketCount>0){
-    Error(R"("/" MUST appear before "<>")");
+    PrintGrammarError(R"("/" MUST appear before "<>":)",info);
     return false;
   }
   if(preInfo){
     if(preInfo->type==LexicalInfoType::NAME){
       return true;
     } else{
-      Error(R"(there MUST be folder or file names before "/")");
+      PrintGrammarError(R"(there MUST be folder or file names before "/":)",info);
       return false;
     }
   } else{
-    Error(R"(there MUST be folder or file names before "/")");
+    PrintGrammarError(R"(there MUST be folder or file names before "/":)",info);
     return false;
   }
 }
 
 clbool GrammarAnalyzer::AnalyzeKeywordVLine_(cluint currentOffset){
+  const LexicalInfo* info=GetLexicalInfoAt_(currentOffset);
   const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
   if(m_uBracketCount==0 || m_uBracketCount>1){
-    Error(R"("|" MUST appear before "<>")");
+    PrintGrammarError(R"("|" MUST appear before "<>":)",info);
     return false;
   } else{
     if(preInfo){
       if(preInfo->type==LexicalInfoType::NAME){
         return true;
       } else{
-        Error(R"(there MUST be folder or file names before "|")");
+        PrintGrammarError(R"(there MUST be folder or file names before "|":)",info);
         return false;
       }
     } else{
-      Error(R"("|" MUST NOT appear at the beginning!)");
+      PrintGrammarError(R"("|" MUST NOT appear at the beginning!:)",info);
       return false;
     }
   }
 }
 
 clbool GrammarAnalyzer::AnalyzeKeywordLeftBracket_(cluint currentOffset){
+  const LexicalInfo* info=GetLexicalInfoAt_(currentOffset);
   const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
   if(m_uBracketCount==0){
     m_uBracketCount++;
@@ -127,25 +133,26 @@ clbool GrammarAnalyzer::AnalyzeKeywordLeftBracket_(cluint currentOffset){
       if(IsFolderKeyword(preInfo->fixedStr)){
         return true;
       } else{
-        Error(R"(there MUST BE "/" before "<",unless "<" starts at the beginning.)");
+        PrintGrammarError(R"(there MUST BE "/" before "<",unless "<" starts at the beginning.:)",info);
         return false;
       }
     } else{
       return true;
     }
   } else if(m_uBracketCount==1){
-    Error(R"(group can NOT nested!)");
+    PrintGrammarError(R"(group can NOT nested!:)",info);
     return false;
   } else{
-    Error(R"(group can only has one at most!)");
+    PrintGrammarError(R"(group can only has one at most!:)",info);
     return false;
   }
 }
 
 clbool GrammarAnalyzer::AnalyzeKeywordRightBracket_(cluint currentOffset){
+  const LexicalInfo* info=GetLexicalInfoAt_(currentOffset);
   const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
   if(m_uBracketCount==0){
-    Error(R"(">" MUST NOT appear before "<")");
+    PrintGrammarError(R"(">" MUST NOT appear before "<":)",info);
     return false;
   } else if(m_uBracketCount==1){
     m_uBracketCount++;
@@ -153,26 +160,27 @@ clbool GrammarAnalyzer::AnalyzeKeywordRightBracket_(cluint currentOffset){
       if(preInfo->type==LexicalInfoType::NAME){
         return true;
       } else{
-        Error(R"(there MUST be folder or file names before ">")");
+        PrintGrammarError(R"(there MUST be folder or file names before ">":)",info);
         return false;
       }
     } else{
-      Error(R"(">" MUST NOT appear at the beginning!)");
+      PrintGrammarError(R"(">" MUST NOT appear at the beginning!:)",info);
       return false;
     }
   } else if(m_uBracketCount>1){
-    Error(R"(group can only has one at most!)");
+    PrintGrammarError(R"(group can only has one at most!:)",info);
     return false;
   }
 }
 
 clbool GrammarAnalyzer::AnalyzeKeywordDoubleRightBracket_(cluint currentOffset){
+  const LexicalInfo* info=GetLexicalInfoAt_(currentOffset);
   const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
   if(preInfo){
     if(IsFolderKeyword(preInfo->fixedStr)){
       return true;
     } else{
-      Error(R"(there MUST BE "/" before ">>" while it's not at the beginning!)");
+      PrintGrammarError(R"(there MUST BE "/" before ">>" while it's not at the beginning!:)",info);
       return false;
     }
   } else{
@@ -181,7 +189,6 @@ clbool GrammarAnalyzer::AnalyzeKeywordDoubleRightBracket_(cluint currentOffset){
 }
 
 clbool GrammarAnalyzer::AnalyzeName_(cluint currentOffset){
-  const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
   return true;
 }
 
@@ -193,11 +200,11 @@ clbool GrammarAnalyzer::AnalyzeRegexp_(cluint currentOffset){
       if(IsDoubleRightBracketKeyword(preInfo->fixedStr)){
         return true;
       } else{
-        Error(R"(there MUST BE ">>" before regular expression!)");
+        PrintGrammarError(R"(there MUST BE ">>" before regular expression!:)",info);
         return false;
       }
     } else{
-      Error(R"(regular expression MUST NOT at the beginning!)");
+      PrintGrammarError(R"(regular expression MUST NOT at the beginning!:)",info);
       return false;
     }
   }

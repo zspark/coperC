@@ -55,3 +55,4 @@ clbool IsCoperAllowedName(const clstr& str){
     return false;
   }
 }
+

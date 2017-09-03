@@ -1,4 +1,22 @@
-parameter -v -y Y -x -r "./root/" -t "./root2/"
+parameter v y Y -x -r "./root/" -t "./root2/"
+<sss/>
+aaa<sss/>
+aaa
+.png
+*.png
+*.*
+*.
+.*
+*
+***
+xxx.jxpeg
+bb/xxx.jxpeg
+bb/*.extension
+bb/aab3*.extension
+bb/this is file nameN.*
+bb/no extention file name
+>
+<>
 aa/<ggg|a*>.pn
 aa/<***|ss>.pn
 <ss>pn

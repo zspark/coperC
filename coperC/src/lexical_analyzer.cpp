@@ -7,6 +7,17 @@
 using namespace std;
 using namespace cl;
 
+
+void PrintError(clstr s,const LexicalInfo* info,clstr rawStr,cluint c1,cluint c2){
+  Error(s,false);
+  Text("\"",c1,false);
+  vector<cluint> pos;
+  pos.push_back(info->startIndex);
+  pos.push_back(info->rawStrLen);
+  HighLightText(rawStr,c1,pos,c2,false);
+  Text("\"",c1,true);
+}
+
 LexicalAnalyzer::LexicalAnalyzer(cluint defaultColor,cluint highlightColor)
   :m_defaultPrintColor(defaultColor),m_highLightPrintColor(highlightColor){}
 
@@ -30,13 +41,9 @@ clbool LexicalAnalyzer::Analyze(clstr str,clbool verbose){
     return true;
   }
 
-  /*
   if(m_verbosePrint){
-    LexicalInfo info(R"(/\:*?"<>|)",0);
-    PrintErrorName_("Name should not contain:",&info,info.rawStr,1);
+    Error("Lexical analysing failed, Executing terminated!");
   }
-  */
-  Error("Lexical analysing failed, Executing terminated!");
   return false;
 }
 
@@ -104,7 +111,8 @@ clbool LexicalAnalyzer::ValidateNames_(){
           PrintFixedName_("fixed name:",currentLex);
         }
       } else{
-        PrintErrorName_("name is illegal:",currentLex,m_rawString);
+        PrintError("name is illegal:",currentLex,m_rawString,
+          m_defaultPrintColor,m_highLightPrintColor);
         return false;
       }
     }
@@ -129,15 +137,4 @@ inline void LexicalAnalyzer::PrintFixedName_(clstr s,LexicalInfo* info){
     Warning(s,false);
     Warning("\""+info->rawStr+"\"  ->  \""+info->fixedStr+"\"",true,false);
   }
-}
-
-inline void LexicalAnalyzer::PrintErrorName_(clstr s,LexicalInfo* info,clstr str,cluint mode){
-  if(mode==0) Error(s,false);
-  else if(mode==1)Warning(s,false);
-  Text("\"",m_defaultPrintColor,false);
-  vector<cluint> pos;
-  pos.push_back(info->startIndex);
-  pos.push_back(info->rawStrLen);
-  HighLightText(str,m_defaultPrintColor,pos,m_highLightPrintColor,false);
-  Text("\"",m_defaultPrintColor,true);
 }

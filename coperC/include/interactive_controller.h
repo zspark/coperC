@@ -19,6 +19,7 @@ public:
   ~InteractiveController();
 
   clbool RequestAnalyze();
+  clbool RequestLoadWithoutErrorItems();
 
 private:
   //OperationControllerStage::stage m_currentStage;

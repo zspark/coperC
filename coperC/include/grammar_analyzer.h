@@ -8,7 +8,7 @@ struct LexicalInfo;
 
 class GrammarAnalyzer final{
 public:
-  GrammarAnalyzer();
+  GrammarAnalyzer(cluint defaultColor,cluint highlightColor);
   ~GrammarAnalyzer();
   clbool Analyze(clstr rawStr,const std::vector<LexicalInfo*>& in,clbool verbose);
 
@@ -30,4 +30,7 @@ private:
   clstr m_sRawStr;
   std::vector<LexicalInfo*> m_vecInfos;
   cluint m_uBracketCount=0;
+
+  const cluint m_defaultPrintColor;
+  const cluint m_highLightPrintColor;
 };

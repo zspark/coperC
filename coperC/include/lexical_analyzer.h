@@ -26,6 +26,9 @@ struct LexicalInfo{
   clstr fixedStr;
 };
 
+void PrintError(clstr s,const LexicalInfo* info,clstr rawStr,
+  cluint c1,cluint c2);
+
 class LexicalAnalyzer final{
 public:
   LexicalAnalyzer(cluint defaultColor,cluint highlightColor);
@@ -38,7 +41,6 @@ private:
   void ParseToLexicalInfo_();
   clbool ValidateNames_();
   inline void PrintFixedName_(clstr s,LexicalInfo* info);
-  inline void PrintErrorName_(clstr s,LexicalInfo* info,clstr str,cluint mode=0);
   inline LexicalInfo* GetLexicalInfo_(clint index);
 
 private:

@@ -45,6 +45,8 @@ void ReadConfigFile(const clchar* configFileURL,vector<clstr>& out){
 }
 
 void Run(const clchar* filename){
+  //----------------------------------------------------------------------------------------------------
+  // STEP 1;
   vector<clstr> out;
   ReadConfigFile(filename,out);
   Unimportant("Avaliable items of config file : "+clTypeUtil::NumberToString(out.size()),true,false);
@@ -73,7 +75,7 @@ void Run(const clchar* filename){
   if(pp.NeedRequest()) if(!ic.RequestAnalyze())return;
 
   LexicalAnalyzer la(ConsoleForeground::GRAY,ConsoleForeground::RED);
-  GrammarAnalyzer ga;
+  GrammarAnalyzer ga(ConsoleForeground::DARKGRAY,ConsoleForeground::DARKRED);
   cluint successCount=0;
   const cluint n=out.size();
   for(clint i=0;i<n;i++){
@@ -92,16 +94,15 @@ void Run(const clchar* filename){
       */
     }
   }
+  NewLine();
   clchar c[256];
   sprintf_s(c,"Analysing finished ( passed/total ) : %d/%d",successCount,n);
   Info(c);
-  /*
-  vector<ConfigFileItem> cfis;
-  ConfigParser cp;
-  cp.parse(&cc,&cfis);
-  FileCoper fc;
-  fc.copyStart(&cfis);
-*/
+  
+  //----------------------------------------------------------------------------------------------------
+  // STEP 2;
+  if(pp.NeedRequest()) if(!ic.RequestLoadWithoutErrorItems())return;
+  Info("OK");
 }
 
 clint main(clint argc,clchar* argv[]){

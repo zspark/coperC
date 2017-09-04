@@ -49,7 +49,7 @@ clbool LexicalAnalyzer::Analyze(clstr str,clbool verbose){
 
 void LexicalAnalyzer::ParseToLexicalInfo_(){
   clchar currentChar;
-  clchar next;
+  clchar next,pre;
   const cluint n=m_rawString.length();
   for(clint i=0;i<n;){
     currentChar=m_rawString[i];
@@ -79,7 +79,19 @@ void LexicalAnalyzer::ParseToLexicalInfo_(){
       vector<clstr> out;
       clRegexp::GetFirstMatch(subS,R"([^<>\|/]+)",out,true);
       subS=out[0];
-      m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::NAME));
+      if(i>0){
+        pre=m_rawString[i-1];
+        if(pre){
+          if(pre==C_MARK_RIGHT_BRACKET){
+            m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::COMMON_EXTENSION));
+          } else{
+            m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::NAME));
+          }
+        } else{
+          m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::NAME));
+        }
+      }else
+        m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::NAME));
       i+=subS.size();
       break;
     }
@@ -92,7 +104,8 @@ clbool LexicalAnalyzer::ValidateNames_(){
   cluint i=0;
   for(;i<n;i++){
     currentLex=m_vecInfos[i];
-    if(currentLex->type==LexicalInfoType::NAME){
+    if(currentLex->type==LexicalInfoType::NAME
+      || currentLex->type==LexicalInfoType::COMMON_EXTENSION ){
       // normal string;
       if(IsCoperAllowedName(currentLex->rawStr)){
         clstr tmp;

@@ -34,13 +34,20 @@ clbool GrammarAnalyzer::Analyze(clstr rawStr,const vector<LexicalInfo*>& in,clbo
     LexicalInfo* info=in[i];
     switch(info->type){
     case LexicalInfoType::KEY_WORD:
-      if(!AnalyzeKeyword_(i))return false;
+      if(!AnalyzeKeyword_(i)){
+        return false;
+      }
       break;
+    case LexicalInfoType::COMMON_EXTENSION:
     case LexicalInfoType::NAME:
-      if(!AnalyzeName_(i))return false;
+      if(!AnalyzeName_(i)){
+        return false;
+      }
       break;
     case LexicalInfoType::REGEXP:
-      if(!AnalyzeRegexp_(i))return false;
+      if(!AnalyzeRegexp_(i)){
+        return false;
+      }
       break;
     default:
       clchar tmp[255];
@@ -94,11 +101,11 @@ clbool GrammarAnalyzer::AnalyzeKeywordFolder_(cluint currentOffset){
     if(preInfo->type==LexicalInfoType::NAME){
       return true;
     } else{
-      PrintGrammarError(R"(there MUST be folder or file names before "/":)",info);
+      PrintGrammarError(R"(there MUST be folder or file names before "/":)",preInfo);
       return false;
     }
   } else{
-    PrintGrammarError(R"(there MUST be folder or file names before "/":)",info);
+    PrintGrammarError(R"(there MUST be folder or file names before "/":)",preInfo);
     return false;
   }
 }
@@ -107,18 +114,21 @@ clbool GrammarAnalyzer::AnalyzeKeywordVLine_(cluint currentOffset){
   const LexicalInfo* info=GetLexicalInfoAt_(currentOffset);
   const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
   if(m_uBracketCount==0 || m_uBracketCount>1){
-    PrintGrammarError(R"("|" MUST appear before "<>":)",info);
+    PrintGrammarError(R"("|" MUST appear before "<>":)",preInfo);
     return false;
   } else{
     if(preInfo){
       if(preInfo->type==LexicalInfoType::NAME){
-        return true;
+        if(IsStarOnly(preInfo->fixedStr)){
+          PrintGrammarError(R"(组中不能使用通配符！:)",preInfo);
+          return false;
+        }else return true;
       } else{
-        PrintGrammarError(R"(there MUST be folder or file names before "|":)",info);
+        PrintGrammarError(R"(there MUST be folder or file names before "|":)",preInfo);
         return false;
       }
     } else{
-      PrintGrammarError(R"("|" MUST NOT appear at the beginning!:)",info);
+      PrintGrammarError(R"("|" MUST NOT appear at the beginning!:)",preInfo);
       return false;
     }
   }
@@ -133,17 +143,17 @@ clbool GrammarAnalyzer::AnalyzeKeywordLeftBracket_(cluint currentOffset){
       if(IsFolderKeyword(preInfo->fixedStr)){
         return true;
       } else{
-        PrintGrammarError(R"(there MUST BE "/" before "<",unless "<" starts at the beginning.:)",info);
+        PrintGrammarError(R"(there MUST BE "/" before "<",unless "<" starts at the beginning.:)",preInfo);
         return false;
       }
     } else{
       return true;
     }
   } else if(m_uBracketCount==1){
-    PrintGrammarError(R"(group can NOT nested!:)",info);
+    PrintGrammarError(R"(group can NOT nested!:)",preInfo);
     return false;
   } else{
-    PrintGrammarError(R"(group can only has one at most!:)",info);
+    PrintGrammarError(R"(group can only has one at most!:)",preInfo);
     return false;
   }
 }
@@ -158,7 +168,10 @@ clbool GrammarAnalyzer::AnalyzeKeywordRightBracket_(cluint currentOffset){
     m_uBracketCount++;
     if(preInfo){
       if(preInfo->type==LexicalInfoType::NAME){
-        return true;
+        if(IsStarOnly(preInfo->fixedStr)){
+          PrintGrammarError(R"(组中不能使用通配符！:)",info);
+          return false;
+        }else return true;
       } else{
         PrintGrammarError(R"(there MUST be folder or file names before ">":)",info);
         return false;
@@ -176,9 +189,19 @@ clbool GrammarAnalyzer::AnalyzeKeywordRightBracket_(cluint currentOffset){
 clbool GrammarAnalyzer::AnalyzeKeywordDoubleRightBracket_(cluint currentOffset){
   const LexicalInfo* info=GetLexicalInfoAt_(currentOffset);
   const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
+  const LexicalInfo* nextInfo=GetLexicalInfoAt_(currentOffset+1);
   if(preInfo){
     if(IsFolderKeyword(preInfo->fixedStr)){
-      return true;
+      if(m_uBracketCount==0){
+        if(nextInfo && nextInfo->type==LexicalInfoType::REGEXP) return true;
+        else{
+          PrintGrammarError(R"(">>" MUST ended with regular expresion:)",info);
+          return false;
+        }
+      } else{
+        PrintGrammarError(R"(">>" MUST appear without "<>"!:)",info);
+        return false;
+      }
     } else{
       PrintGrammarError(R"(there MUST BE "/" before ">>" while it's not at the beginning!:)",info);
       return false;
@@ -194,6 +217,7 @@ clbool GrammarAnalyzer::AnalyzeName_(cluint currentOffset){
 
 clbool GrammarAnalyzer::AnalyzeRegexp_(cluint currentOffset){
   const LexicalInfo* info=GetLexicalInfoAt_(currentOffset);
+  F_DBG_ASSERT(info);
   if(info){
     const LexicalInfo* preInfo=GetLexicalInfoAt_(currentOffset-1);
     if(preInfo){

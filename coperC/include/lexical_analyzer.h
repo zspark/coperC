@@ -8,6 +8,7 @@ enum infotype{
   KEY_WORD=0,
   NAME,
   REGEXP,
+  COMMON_EXTENSION,
 };
 }
 

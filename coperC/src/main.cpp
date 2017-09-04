@@ -19,18 +19,21 @@
 #include <vector>
 #include <fstream>
 #include "coper.h"
+#include "clTypeUtil.h"
 #include "parameter_parser.h"
 #include "lexical_analyzer.h"
 #include "grammar_analyzer.h"
+#include "assembling.h"
 #include "interactive_controller.h"
 
 using namespace std;
 using namespace cl;
 
-void ReadConfigFile(const clchar* configFileURL,vector<clstr>& out){
+void ReadConfigFile(const clchar* configFileURL,vector<clstr>& out,cluint* totalItemCount){
   ifstream file_r(configFileURL,ios::in);
   if(file_r){
     while(!file_r.eof()){
+      (*totalItemCount)++;
       char c[_MAX_PATH];
       file_r.getline(c,_MAX_PATH,'\n');
       if(clstr(c).empty())continue;
@@ -46,21 +49,23 @@ void ReadConfigFile(const clchar* configFileURL,vector<clstr>& out){
 
 void Run(const clchar* filename){
   //----------------------------------------------------------------------------------------------------
-  // STEP 1;
-  vector<clstr> out;
-  ReadConfigFile(filename,out);
-  Unimportant("Avaliable items of config file : "+clTypeUtil::NumberToString(out.size()),true,false);
+  // STEP 1-1;
+  vector<clstr> needParsingItems;
+  cluint totalItemCount=0;
+  ReadConfigFile(filename,needParsingItems,&totalItemCount);
+  const cluint needParsingItemCount=needParsingItems.size();
 
+  // STEP 1-2
   ParameterParser pp;
   bool goonFlag=false;
-  for(cluint i=0;i<out.size();i++){
-    if(clRegexp::IsStartedWith(out[i],"parameter",true)){
-      Unimportant(out[i],true,false);
-      if(!pp.Parse(out[i])){
+  for(cluint i=0;i<needParsingItems.size();i++){
+    if(clRegexp::IsStartedWith(needParsingItems[i],"parameter",true)){
+      Unimportant(needParsingItems[i],true,false);
+      if(!pp.Parse(needParsingItems[i])){
         Error("parameter itme parsing failed!");
         return;
       }
-      out.erase(out.begin()+i);
+      needParsingItems.erase(needParsingItems.begin()+i);
       goonFlag=true;
       break;
     }
@@ -74,35 +79,38 @@ void Run(const clchar* filename){
   InteractiveController ic;
   if(pp.NeedRequest()) if(!ic.RequestAnalyze())return;
 
+  //----------------------------------------------------------------------------------------------------
+  // STEP 1-3
+  cluint avaliableItemCount=0;
   LexicalAnalyzer la(ConsoleForeground::GRAY,ConsoleForeground::RED);
   GrammarAnalyzer ga(ConsoleForeground::DARKGRAY,ConsoleForeground::DARKRED);
-  cluint successCount=0;
-  const cluint n=out.size();
-  for(clint i=0;i<n;i++){
-    clstr s=out[i];
+  Assembling ab(ConsoleForeground::GRAY,ConsoleForeground::RED,pp.IsVerbose());
+  for(clint i=0;i<needParsingItemCount-1;i++){
+    const clstr s=needParsingItems[i];
     if(pp.IsVerbose()){
       NewLine();
       Unimportant(s,true,false);
     }
+
     if(la.Analyze(s,pp.IsVerbose())){
       if(ga.Analyze(s,la.GetLexicalInfoVec(),pp.IsVerbose())){
-        successCount++;
-      } else{
-        //HighLightText(s,ConsoleForeground::WHITE,out,ConsoleForeground::RED);
+        avaliableItemCount++;
+        ab.Assemble(la.GetLexicalInfoVec());
       }
-      /*
-      */
     }
   }
+  const vector<AssembleInfo*> about=ab.GetAssembledInfos();
   NewLine();
-  clchar c[256];
-  sprintf_s(c,"Analysing finished ( passed/total ) : %d/%d",successCount,n);
-  Info(c);
+  Unimportant("Config file analysing finished!");
+  Unimportant("avaliable item count : "+clTypeUtil::NumberToString(avaliableItemCount));
+  Unimportant("need parsing item count : "+clTypeUtil::NumberToString(needParsingItemCount));
+  Unimportant("total item count : "+clTypeUtil::NumberToString(totalItemCount));
+  Unimportant("Assembled simple item count : "+clTypeUtil::NumberToString(about.size()));
   
   //----------------------------------------------------------------------------------------------------
-  // STEP 2;
+  // STEP 1-3;
   if(pp.NeedRequest()) if(!ic.RequestLoadWithoutErrorItems())return;
-  Info("OK");
+   Info("OK");
 }
 
 clint main(clint argc,clchar* argv[]){

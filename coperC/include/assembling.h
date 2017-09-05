@@ -4,18 +4,25 @@
 
 struct LexicalInfo;
 
+
+namespace AssembleInfoNameType{
+enum type{
+  CONCRETE=0,
+  WILDCARD,
+  REGEXP,
+};
+}
+
 struct AssembleInfo{
-  AssembleInfo(clstr path,clbool concrete,clstr name)
-    :relativePath(path),isConcrete(concrete),fileName(name){}
+  AssembleInfo(clstr path,AssembleInfoNameType::type type,clstr name)
+    :relativePath(path),fileNameType(type),fileName(name){}
   AssembleInfo(const AssembleInfo&)=delete;
   AssembleInfo(const AssembleInfo*)=delete;
   AssembleInfo& operator=(const AssembleInfo&)=delete;
   const clstr relativePath;
-  const clbool isConcrete=false;
+  const AssembleInfoNameType::type fileNameType;
   const clstr fileName;
 };
-
-
 
 class Assembling final{
 public:

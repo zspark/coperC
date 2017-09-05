@@ -1,6 +1,6 @@
 #include "assembling.h"
 #include "coper.h"
-#include "lexical_analyzer.h"
+#include "analyzer.h"
 
 using namespace std;
 
@@ -60,7 +60,9 @@ cluint Assembling::HandleBracket_(clint index){
     info=m_vecInfos[offset];
     const clstr fileName=info->fixedStr;
     if(info->type==LexicalInfoType::NAME){
-      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,true,fileName+m_commonExtension));
+      m_vecOut.push_back(new AssembleInfo(
+        m_sRelativePath,AssembleInfoNameType::CONCRETE,fileName+m_commonExtension
+      ));
     } else if(IsRightBracketKeyword(fileName)){
       break;
     }
@@ -87,15 +89,15 @@ clbool Assembling::HandleLastFileName_(clint pos){
     const clstr nameN=str.substr(0,index);
     const clstr extension=str.substr(index+1);
     if(IsStarOnly(nameN)||IsStarOnly(extension)){
-      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,false,str));
+      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::WILDCARD,str));
     } else{
       // concrete file name;
-      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,true,str));
+      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::CONCRETE,str));
     }
   } else{
     if(IsStarOnly(str)){
-      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,false,str));
-    } else m_vecOut.push_back(new AssembleInfo(m_sRelativePath,true,str));
+      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::WILDCARD,str));
+    } else m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::CONCRETE,str));
   }
   return false;
 }
@@ -103,5 +105,5 @@ clbool Assembling::HandleLastFileName_(clint pos){
 clbool Assembling::HandleRegexp_(clint index){
   const LexicalInfo* info=m_vecInfos[index+1];
   F_DBG_ASSERT(info);
-  m_vecOut.push_back(new AssembleInfo(m_sRelativePath,false,info->fixedStr));
+  m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::REGEXP,info->fixedStr));
 }

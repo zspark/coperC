@@ -4,7 +4,7 @@
 #include "clPrinter.h"
 #include "clRegexpUtil.h"
 
-#define VERSION "V0.3"
+#define VERSION "V0.4"
 
 #define MARK_PARAMETER "parameter"
 #define MARK_ROOT "root"

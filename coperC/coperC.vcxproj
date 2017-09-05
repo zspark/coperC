@@ -19,27 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\assembling.cpp" />
+    <ClCompile Include="include\config_file_loader.cpp" />
+    <ClCompile Include="src\assembling.cpp" />
     <ClCompile Include="src\coper.cpp" />
-    <ClCompile Include="src\fold_file_loader.cpp" />
-    <ClCompile Include="src\grammar_analyzer.cpp" />
+    <ClCompile Include="src\analyzer.cpp" />
+    <ClCompile Include="src\folder_file_validation.cpp" />
     <ClCompile Include="src\interactive_analyzer.cpp" />
-    <ClCompile Include="src\lexical_analyzer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\parameter_parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\assembling.h" />
-    <ClInclude Include="include\ConfigParser.h" />
+    <ClInclude Include="include\config_file_loader.h" />
     <ClInclude Include="include\coper.h" />
-    <ClInclude Include="include\FileCoper.h" />
-    <ClInclude Include="include\fold_file_loader.h" />
-    <ClInclude Include="include\grammar_analyzer.h" />
-    <ClInclude Include="include\lexical_analyzer.h" />
+    <ClInclude Include="include\analyzer.h" />
+    <ClInclude Include="include\folder_file_validation.h" />
     <ClInclude Include="include\interactive_controller.h" />
     <ClInclude Include="include\parameter_parser.h" />
-    <ClInclude Include="include\Status.h" />
-    <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A5F5733A-4BF8-47C5-B249-0DD3D1EBB6AB}</ProjectGuid>

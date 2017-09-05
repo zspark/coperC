@@ -18,8 +18,8 @@ public:
   InteractiveController();
   ~InteractiveController();
 
-  clbool RequestAnalyze();
-  clbool RequestLoadWithoutErrorItems();
+  clbool RequestAnalyzing();
+  clbool RequestValidation();
 
 private:
   //OperationControllerStage::stage m_currentStage;

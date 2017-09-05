@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\grammar_analyzer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lexical_analyzer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\coper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,32 +27,20 @@
     <ClCompile Include="src\interactive_analyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\fold_file_loader.cpp">
+    <ClCompile Include="src\assembling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\assembling.cpp">
+    <ClCompile Include="include\config_file_loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\analyzer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\folder_file_validation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ConfigParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\FileCoper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Status.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\grammar_analyzer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\lexical_analyzer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\coper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -68,10 +50,16 @@
     <ClInclude Include="include\interactive_controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\fold_file_loader.h">
+    <ClInclude Include="include\assembling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\assembling.h">
+    <ClInclude Include="include\config_file_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\analyzer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\folder_file_validation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

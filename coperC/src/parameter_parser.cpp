@@ -41,39 +41,40 @@ clstr ParameterParser::GetStringBetweenQuote_(clstr str,cluint startIndex){
 clbool ParameterParser::Parse(clstr str){
   const clstr p=MARK_PARAMETER;
   str=str.substr(p.size());
-  // 强行加上空格，解决3个字符取值时候，无参数命令位于最后的复杂判断；
-  str+=" ";
+  // 强行加上空格，解决4个字符取值时候，无参数命令位于最后的复杂判断；
+  str=" "+str+" ";
   
   clstr currentStr;
   cluint i=0;
-  for(;i<str.size()-2;i++){
-    currentStr=str.substr(i,3);
-    if(strcmp(currentStr.c_str(),"-v ")==0){
+  for(;i<str.size()-3;i++){
+    currentStr=str.substr(i,4);
+    if(strcmp(currentStr.c_str()," -v ")==0){
       m_operation_flag|=V_VERBOSE;
-    } else if(strcmp(currentStr.c_str(),"-c ")==0){
+    } else if(strcmp(currentStr.c_str()," -c ")==0){
       m_operation_flag|=V_OPERATION_COPY;
-    } else if(strcmp(currentStr.c_str(),"-x ")==0){
+    } else if(strcmp(currentStr.c_str()," -x ")==0){
       m_operation_flag|=V_OPERATION_CUT;
-    } else if(strcmp(currentStr.c_str(),"-y ")==0){
+    } else if(strcmp(currentStr.c_str()," -y ")==0){
       m_operation_flag|=V_OPERATION_YES;
-    } else if(strcmp(currentStr.c_str(),"-Y ")==0){
+    } else if(strcmp(currentStr.c_str()," -Y ")==0){
       m_operation_flag|=V_OPERATION_YES_ALL;
-    } else if(strcmp(currentStr.c_str(),"-d ")==0){
+    } else if(strcmp(currentStr.c_str()," -d ")==0){
       m_operation_flag|=V_OPERATION_DELETE;
-    } else if(strcmp(currentStr.c_str(),"-r ")==0){
+    } else if(strcmp(currentStr.c_str()," -r ")==0){
       m_rootPath=GetStringBetweenQuote_(str,i+3);
       i+=3+m_rootPath.size();
-    }else if(strcmp(currentStr.c_str(),"-t ")==0){
+    }else if(strcmp(currentStr.c_str()," -t ")==0){
       m_targetPath=GetStringBetweenQuote_(str,i+3);
       i+=3+m_targetPath.size();
     }
   }
 
+  clbool flag=true;
   cluint operation=m_operation_flag&0x000000FF;
   if(0u<operation && operation<=0x00000008)m_operation_flag|=V_INITED;
   else{
     Error("-c,-d,-x can NOT exist more than one. and MUST exist only one.");
-    return false;
+    flag=false;
   }
 
   // avidate path avaliablability.
@@ -81,9 +82,12 @@ clbool ParameterParser::Parse(clstr str){
   else{
     m_operation_flag&=~V_INITED;
     Error("root path is NOT exist in your file system.");
-    return false;
+    flag=false;
   }
-  return true;
+  if(!flag){
+    Unimportant(str);
+  }
+  return flag;
 }
 
 clbool ParameterParser::NeedRequest() const{

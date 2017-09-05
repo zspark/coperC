@@ -15,102 +15,73 @@
 */
 
 #include <windows.h>
-#include <iostream>
 #include <vector>
-#include <fstream>
 #include "coper.h"
 #include "clTypeUtil.h"
 #include "parameter_parser.h"
-#include "lexical_analyzer.h"
-#include "grammar_analyzer.h"
+#include "analyzer.h"
 #include "assembling.h"
 #include "interactive_controller.h"
+#include "config_file_loader.h"
+#include "folder_file_validation.h"
 
 using namespace std;
 using namespace cl;
 
-void ReadConfigFile(const clchar* configFileURL,vector<clstr>& out,cluint* totalItemCount){
-  ifstream file_r(configFileURL,ios::in);
-  if(file_r){
-    while(!file_r.eof()){
-      (*totalItemCount)++;
-      char c[_MAX_PATH];
-      file_r.getline(c,_MAX_PATH,'\n');
-      if(clstr(c).empty())continue;
-      if(clRegexp::IsStartedWith(c,R"(#)",true))continue;
-      out.push_back(c);
-      if(file_r.fail()){
-        file_r.clear(file_r.rdstate()&~ifstream::failbit);
-      }
-    }
-  }
-  file_r.close();
-}
-
 void Run(const clchar* filename){
+  InteractiveController ic;
+  ParameterParser pp;
+
   //----------------------------------------------------------------------------------------------------
   // STEP 1-1;
   vector<clstr> needParsingItems;
-  cluint totalItemCount=0;
-  ReadConfigFile(filename,needParsingItems,&totalItemCount);
-  const cluint needParsingItemCount=needParsingItems.size();
-
-  // STEP 1-2
-  ParameterParser pp;
-  bool goonFlag=false;
-  for(cluint i=0;i<needParsingItems.size();i++){
-    if(clRegexp::IsStartedWith(needParsingItems[i],"parameter",true)){
-      Unimportant(needParsingItems[i],true,false);
-      if(!pp.Parse(needParsingItems[i])){
-        Error("parameter itme parsing failed!");
-        return;
-      }
-      needParsingItems.erase(needParsingItems.begin()+i);
-      goonFlag=true;
-      break;
-    }
-  }
-  if(!goonFlag){
-    Error("There is no parameter item exist, please check your config file.");
-    return;
-  }
-
-  Unimportant("-----------------------------------------",true,false);
-  InteractiveController ic;
-  if(pp.NeedRequest()) if(!ic.RequestAnalyze())return;
+  ConfigFileLoader cfl(ConsoleForeground::GRAY,ConsoleForeground::RED);
+  if(cfl.Load(filename,needParsingItems,&pp)){
+    // load successfully.
+    cfl.PrintInfo();
+    if(pp.NeedRequest()) if(!ic.RequestAnalyzing())return;
+  } else return;
 
   //----------------------------------------------------------------------------------------------------
-  // STEP 1-3
+  // STEP 1-2
+  const cluint needParsingItemCount=needParsingItems.size();
   cluint avaliableItemCount=0;
-  LexicalAnalyzer la(ConsoleForeground::GRAY,ConsoleForeground::RED);
-  GrammarAnalyzer ga(ConsoleForeground::DARKGRAY,ConsoleForeground::DARKRED);
+  GrammarAnalyzer ga(ConsoleForeground::GRAY,ConsoleForeground::RED,pp.IsVerbose());
   Assembling ab(ConsoleForeground::GRAY,ConsoleForeground::RED,pp.IsVerbose());
-  for(clint i=0;i<needParsingItemCount-1;i++){
+  for(clint i=0;i<needParsingItemCount;i++){
     const clstr s=needParsingItems[i];
     if(pp.IsVerbose()){
       NewLine();
       Unimportant(s,true,false);
     }
 
-    if(la.Analyze(s,pp.IsVerbose())){
-      if(ga.Analyze(s,la.GetLexicalInfoVec(),pp.IsVerbose())){
-        avaliableItemCount++;
-        ab.Assemble(la.GetLexicalInfoVec());
-      }
+    if(ga.Analyze(s)){
+      avaliableItemCount++;
+      ab.Assemble(ga.GetLexicalInfoVec());
     }
+    ga.CleanCache();
   }
   const vector<AssembleInfo*> about=ab.GetAssembledInfos();
   NewLine();
   Unimportant("Config file analysing finished!");
-  Unimportant("avaliable item count : "+clTypeUtil::NumberToString(avaliableItemCount));
-  Unimportant("need parsing item count : "+clTypeUtil::NumberToString(needParsingItemCount));
-  Unimportant("total item count : "+clTypeUtil::NumberToString(totalItemCount));
   Unimportant("Assembled simple item count : "+clTypeUtil::NumberToString(about.size()));
   
   //----------------------------------------------------------------------------------------------------
-  // STEP 1-3;
-  if(pp.NeedRequest()) if(!ic.RequestLoadWithoutErrorItems())return;
-   Info("OK");
+  // STEP 2;
+  if(pp.NeedRequest()) if(!ic.RequestValidation())return;
+  vector<clstr> vecFileURL;
+  FolderFileValidation ffv(pp.GetRootPath()
+    ,ConsoleForeground::GRAY
+    ,ConsoleForeground::RED
+    ,pp.IsVerbose()
+  );
+  ffv.Validate(about,&vecFileURL);
+  ffv.PrintInfo();
+  ffv.CleanCache();
+
+  //----------------------------------------------------------------------------------------------------
+  // STEP 3;
+  Info("OK");
 }
 
 clint main(clint argc,clchar* argv[]){
@@ -124,7 +95,6 @@ clint main(clint argc,clchar* argv[]){
 
 #if 1
   const clstr configFileURL("./config.txt");
-  Unimportant("config file URL : "+configFileURL,true,false);
   Run(configFileURL.c_str());
 #else
   appURL=argv[0];

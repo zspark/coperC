@@ -1,7 +1,6 @@
-#include "grammar_analyzer.h"
+#include "analyzer.h"
 #include "clTypeUtil.h"
 #include "clPrinter.h"
-#include "lexical_analyzer.h"
 #include "coper.h"
 #include "clRegexpUtil.h"
 #include "clPrinter.h"
@@ -9,29 +8,50 @@
 using namespace std;
 using namespace cl;
 
-#define PrintGrammarError(s,info) PrintError(s,info,m_sRawStr,m_defaultPrintColor,m_highLightPrintColor);
+#define PrintGrammarError(s,info) PrintError_(s,info,m_sRawStr,m_defaultPrintColor,m_highLightPrintColor);
 
-GrammarAnalyzer::GrammarAnalyzer(cluint defaultColor,cluint highlightColor)
-  :m_defaultPrintColor(defaultColor),m_highLightPrintColor(highlightColor){}
+GrammarAnalyzer::GrammarAnalyzer(cluint defaultColor,cluint highlightColor,clbool verbose)
+  :m_defaultPrintColor(defaultColor),m_highLightPrintColor(highlightColor),m_bVerbosePrint(verbose){}
 
-GrammarAnalyzer::~GrammarAnalyzer(){
-  ResetLocal_();
+GrammarAnalyzer::~GrammarAnalyzer(){ }
+
+clbool GrammarAnalyzer::Analyze(clstr rawStr){
+  m_sRawStr=rawStr;
+
+  if(AnalyzeLexical_())
+    return AnalyzeGrammar_();
+  else return false;
+}
+clbool GrammarAnalyzer::AnalyzeLexical_(){
+
+  if(m_bVerbosePrint){
+    Info("Lexical analysing start...");
+  }
+
+  ParseToLexicalInfo_();
+  if(ValidateNames_()){
+    if(m_bVerbosePrint){
+      Info("Lexical analysing finished, It's correct.");
+    }
+    return true;
+  }
+
+  if(m_bVerbosePrint){
+    Error("Lexical analysing failed, Executing terminated!");
+  }
+  return false;
 }
 
-clbool GrammarAnalyzer::Analyze(clstr rawStr,const vector<LexicalInfo*>& in,clbool verbose){
-  ResetLocal_();
-  m_sRawStr=rawStr;
-  m_vecInfos=in;
-  m_bVerbosePrint=verbose;
+clbool GrammarAnalyzer::AnalyzeGrammar_(){
 
   if(m_bVerbosePrint){
     Info("Gammar analysing start...");
   }
 
   const LexicalInfo* info=nullptr;
-  const cluint n=in.size();
+  const cluint n=m_vecInfos.size();
   for(clint i=0;i<n;i++){
-    LexicalInfo* info=in[i];
+    LexicalInfo* info=m_vecInfos[i];
     switch(info->type){
     case LexicalInfoType::KEY_WORD:
       if(!AnalyzeKeyword_(i)){
@@ -232,12 +252,114 @@ clbool GrammarAnalyzer::AnalyzeRegexp_(cluint currentOffset){
       return false;
     }
   }
-
 }
 
-void GrammarAnalyzer::ResetLocal_(){
-  m_bVerbosePrint=false;
+void GrammarAnalyzer::ParseToLexicalInfo_(){
+  clchar currentChar;
+  clchar next,pre;
+  const cluint n=m_sRawStr.length();
+  for(clint i=0;i<n;){
+    currentChar=m_sRawStr[i];
+    switch(currentChar){
+    case C_MARK_LEFT_BRACKET:
+    case C_MARK_V_LINE:
+    case C_MARK_SLASH:
+      m_vecInfos.push_back(new LexicalInfo(clstr(&currentChar,1),i,LexicalInfoType::KEY_WORD));
+      i+=1;
+      break;
+    case C_MARK_RIGHT_BRACKET:
+      next=m_sRawStr[i+1];
+      if(next && next==C_MARK_RIGHT_BRACKET){
+        m_vecInfos.push_back(new LexicalInfo(MARK_DOUBLE_RIGHT_BRACKET,i,LexicalInfoType::KEY_WORD));
+        i+=2;
+        // the following are all regexp context;
+        clstr subS=m_sRawStr.substr(i);
+        m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::REGEXP));
+        return;
+      } else{
+        m_vecInfos.push_back(new LexicalInfo(clstr(&currentChar,1),i,LexicalInfoType::KEY_WORD));
+        i+=1;
+      }
+      break;
+    default:
+      clstr subS=m_sRawStr.substr(i);
+      vector<clstr> out;
+      clRegexp::GetFirstMatch(subS,R"([^<>\|/]+)",out,true);
+      subS=out[0];
+      if(i>0){
+        pre=m_sRawStr[i-1];
+        if(pre){
+          if(pre==C_MARK_RIGHT_BRACKET){
+            m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::COMMON_EXTENSION));
+          } else{
+            m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::NAME));
+          }
+        } else{
+          m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::NAME));
+        }
+      }else
+        m_vecInfos.push_back(new LexicalInfo(subS,i,LexicalInfoType::NAME));
+      i+=subS.size();
+      break;
+    }
+  }
+}
+
+clbool GrammarAnalyzer::ValidateNames_(){
+  LexicalInfo* currentLex=nullptr;
+  const cluint n=m_vecInfos.size();
+  cluint i=0;
+  for(;i<n;i++){
+    currentLex=m_vecInfos[i];
+    if(currentLex->type==LexicalInfoType::NAME
+      || currentLex->type==LexicalInfoType::COMMON_EXTENSION ){
+      // normal string;
+      if(IsCoperAllowedName(currentLex->rawStr)){
+        clstr tmp;
+        const LexicalInfo* info=GetLexicalInfoAt_(i-1);
+        if(info && IsRightBracketKeyword(info->rawStr)){
+          // common extension name;
+          tmp=clTypeUtil::StringTrimLeft(currentLex->rawStr);
+          if(!clRegexp::IsStartedWith(tmp,R"(.)")){
+            tmp="."+tmp;
+          }
+        } else{
+          tmp=clTypeUtil::StringTrim(currentLex->rawStr);
+        }
+        if(tmp.length()!=currentLex->rawStr.length()){
+          currentLex->fixedStr=tmp;
+          PrintFixedName_("fixed name:",currentLex);
+        }
+      } else{
+        PrintError_("name is illegal:",currentLex,m_sRawStr,
+          m_defaultPrintColor,m_highLightPrintColor);
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+void GrammarAnalyzer::ClearCache(){
   m_uBracketCount=0;
   m_sRawStr="";
+  for(LexicalInfo* l: m_vecInfos) delete l;
   m_vecInfos.clear();
+}
+
+void GrammarAnalyzer::PrintError_(clstr s,const LexicalInfo* info,clstr rawStr,cluint c1,cluint c2){
+  Error(s,false);
+  Text("\"",c1,false);
+  vector<cluint> pos;
+  pos.push_back(info->startIndex);
+  pos.push_back(info->rawStrLen);
+  HighLightText(rawStr,c1,pos,c2,false);
+  Text("\"",c1,true);
+}
+
+inline void GrammarAnalyzer::PrintFixedName_(clstr s,LexicalInfo* info){
+  if(m_bVerbosePrint){
+    Warning(s,false);
+    Warning("\""+info->rawStr+"\"  ->  \""+info->fixedStr+"\"",true,false);
+  }
 }

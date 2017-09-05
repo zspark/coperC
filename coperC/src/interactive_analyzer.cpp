@@ -11,7 +11,7 @@ InteractiveController::InteractiveController(){}
 
 InteractiveController::~InteractiveController(){}
 
-clbool InteractiveController::RequestAnalyze(){
+clbool InteractiveController::RequestAnalyzing(){
   Text("Going to analysing config file items, do you agree? (y/n)",ConsoleForeground::WHITE,false);
   clbool r;
   clchar input;
@@ -26,7 +26,7 @@ clbool InteractiveController::RequestAnalyze(){
   return r;
 }
 
-clbool InteractiveController::RequestLoadWithoutErrorItems(){
+clbool InteractiveController::RequestValidation(){
   Text("Going to load items, and validate folder and|or file existance, do you agree? (y/n)",ConsoleForeground::WHITE,false);
   clbool r;
   clchar input;

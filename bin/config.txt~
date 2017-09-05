@@ -1,15 +1,4 @@
-parameter -v -y Y -x -r "C:/Windows/System32/" -t "./root2/"
-ccc/*.png
-directory/name.*
-aa/bbcc/<ggg|a>.pn
-aa/<***|ss>.pn
-aa/<?|ss>.pn
-<ss>pn
-<ss>.    pn
-<ss>    .pn
-<ss>    .     pn
-a.a/<*|ss>.pn
-aa/<*|ss>.*
-aa/<ggg|s>
-aa<s>.png
-aa/>>^[^\\\\\"/\\*:\\?<>\\|]+$
+parameter -v -y Y -x -r "./root/" -t "./root2/"
+B/C/*.jpg
+testdoc2/*
+aaa/bbb/dd.mp3

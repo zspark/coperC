@@ -4,22 +4,26 @@
 
 struct AssembleInfo;
 
-class FoldFileLoader final{
+class FolderFileValidation final{
 public:
-  FoldFileLoader(clstr rootPath,cluint defaultColor,cluint highlightColor,clbool verbose);
-  ~FoldFileLoader();
+  FolderFileValidation(clstr rootPath,cluint defaultColor,cluint highlightColor,clbool verbose);
+  ~FolderFileValidation();
 
   void Validate(const std::vector<AssembleInfo*>& in,std::vector<clstr>* out);
+  void PrintInfo();
+  void CleanCache();
 
 private:
-  clbool HandleLastFileName_(clint index);
-  clbool HandleRegexp_(clint index);
+  clbool HandleLastFileName_();
+  clbool HandleRegexp_();
+  clbool HandleConcrete_();
 
 private:
   std::vector<AssembleInfo*> m_vecInfos;
   std::vector<clstr>* m_pVecOut=nullptr;
-  clstr m_commonExtension="";
-  clstr m_sRelativePath="";
+  clint m_iCurrentIndex=-1;
+  cluint m_uNotExistedFileCount=0;
+  cluint m_uMissedFoldersCount=0;
 
   const cluint m_defaultPrintColor;
   const cluint m_highLightPrintColor;

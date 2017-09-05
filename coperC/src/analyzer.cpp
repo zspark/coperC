@@ -340,7 +340,7 @@ clbool GrammarAnalyzer::ValidateNames_(){
   return true;
 }
 
-void GrammarAnalyzer::ClearCache(){
+void GrammarAnalyzer::CleanCache(){
   m_uBracketCount=0;
   m_sRawStr="";
   for(LexicalInfo* l: m_vecInfos) delete l;

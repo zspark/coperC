@@ -34,7 +34,7 @@ public:
   GrammarAnalyzer(cluint defaultColor,cluint highlightColor,clbool verbose);
   ~GrammarAnalyzer();
   clbool Analyze(clstr rawStr);
-  void ClearCache();
+  void CleanCache();
   const std::vector<LexicalInfo*>& GetLexicalInfoVec()const{ return m_vecInfos; }
 
 private:

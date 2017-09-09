@@ -1,27 +1,32 @@
 #pragma once
 #include <vector>
-#include "cllib.h"
+#include "coper.h"
+#include "clHierarchicalStructure.h"
 
-struct AssembleInfo;
 
 class FolderFileValidation final{
 public:
   FolderFileValidation(clstr rootPath,cluint defaultColor,cluint highlightColor,clbool verbose);
   ~FolderFileValidation();
 
-  void Validate(const std::vector<AssembleInfo*>& in,std::vector<clstr>* out);
+  void Validate(hsass* in,std::vector<clstr>* out);
   void PrintInfo();
   void CleanCache();
 
 private:
-  clbool HandleLastFileName_();
+  clbool HandleWildcardName_();
   clbool HandleRegexp_();
   clbool HandleConcrete_();
+  clbool HandleFolder_();
+
+  hsnode* FindAncestorNextSibling_(hsnode* node);
+  void RedirectToParentPath_();
 
 private:
-  std::vector<AssembleInfo*> m_vecInfos;
+  const hsass* m_vecInfos=nullptr;
   std::vector<clstr>* m_pVecOut=nullptr;
-  clint m_iCurrentIndex=-1;
+  hsnode* m_currentNode=nullptr;
+  clstr m_sRelativePath="";
   cluint m_uNotExistedFileCount=0;
   cluint m_uMissedFoldersCount=0;
 

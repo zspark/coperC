@@ -63,6 +63,7 @@ clbool ParameterParser::Parse(clstr str){
     } else if(strcmp(currentStr.c_str()," -r ")==0){
       m_rootPath=GetStringBetweenQuote_(str,i+3);
       i+=3+m_rootPath.size();
+      if(!clRegexp::IsEndedWith(m_rootPath,R"(/)"))m_rootPath+="/";
     }else if(strcmp(currentStr.c_str()," -t ")==0){
       m_targetPath=GetStringBetweenQuote_(str,i+3);
       i+=3+m_targetPath.size();
@@ -71,7 +72,7 @@ clbool ParameterParser::Parse(clstr str){
 
   clbool flag=true;
   cluint operation=m_operation_flag&0x000000FF;
-  if(0u<operation && operation<=0x00000008)m_operation_flag|=V_INITED;
+  if(operation==V_OPERATION_COPY || operation==V_OPERATION_CUT || operation==V_OPERATION_DELETE)m_operation_flag|=V_INITED;
   else{
     Error("-c,-d,-x can NOT exist more than one. and MUST exist only one.");
     flag=false;

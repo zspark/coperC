@@ -1,4 +1,3 @@
-parameter -v -y Y -x -r "./root/" -t "./root2/"
-B/C/*.jpg
-testdoc2/testdoc2
-aaa/bbb/dd.mp3
+parameter -v -y Y x d -c -r "C:/Windows/System32/" -t "./root2/"
+
+*.exe

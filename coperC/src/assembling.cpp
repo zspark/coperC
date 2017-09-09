@@ -3,6 +3,7 @@
 #include "analyzer.h"
 
 using namespace std;
+using namespace cl;
 
 Assembling::Assembling(cluint defaultColor
   ,cluint highlightColor,clbool verbose)
@@ -12,8 +13,8 @@ Assembling::Assembling(cluint defaultColor
 
 Assembling::~Assembling(){}
 
-void Assembling::Assemble(const std::vector<LexicalInfo*>& in){
-  m_sRelativePath="";
+void Assembling::Assemble(const vector<LexicalInfo*>& in){
+  m_tmpNode=nullptr;
   m_vecInfos.clear();
   m_vecInfos=in;
 
@@ -41,69 +42,92 @@ void Assembling::Assemble(const std::vector<LexicalInfo*>& in){
     }
   }
 }
-clbool Assembling::FindCommonExtension_(){
+
+cluint Assembling::HandleBracket_(clint index){
+  clstr m_commonExtension="";
   for(auto i:m_vecInfos){
     if(i->type==LexicalInfoType::COMMON_EXTENSION){
       m_commonExtension=i->fixedStr;
-      return true;
+      break;
     }
   }
-  m_commonExtension="";
-  return false;
-}
-
-cluint Assembling::HandleBracket_(clint index){
-  FindCommonExtension_();
   const LexicalInfo* info=nullptr;
   cluint offset=index;
-  for(offset;;offset++){
+  for(;;offset++){
     info=m_vecInfos[offset];
     const clstr fileName=info->fixedStr;
-    if(info->type==LexicalInfoType::NAME){
-      m_vecOut.push_back(new AssembleInfo(
-        m_sRelativePath,AssembleInfoNameType::CONCRETE,fileName+m_commonExtension
-      ));
-    } else if(IsRightBracketKeyword(fileName)){
+
+    if(IsRightBracketKeyword(fileName)){
       break;
+    } else{
+      if(info->type==LexicalInfoType::NAME){
+        if(!Aim_(fileName)){
+          hsnode* node=m_hs.CreateNode();
+          node->customObject.name=fileName+m_commonExtension;
+          node->customObject.type=NodeType::FILE;
+          m_hs.InsertNode(m_tmpNode,node,cl::hs::clHSNodeRelation::R_LAST_CHILD);
+        }
+      }
     }
   }
   return offset;
 }
 
-clbool Assembling::HandleSlash_(clint index){
+inline clbool Assembling::HandleSlash_(clint index){
   const LexicalInfo* preInfo=m_vecInfos[index-1];
-  clstr str=preInfo->fixedStr;
-  if(IsStarOnly(str)){
-    F_DBG_ASSERT(false);
-  } else{
-    m_sRelativePath+=str+"/";
+  if(!Aim_(preInfo->fixedStr)){
+    // 是目录，又没有瞄准，需要创建目录
+    hsnode* node=m_hs.CreateNode();
+    node->customObject.name=preInfo->fixedStr;
+    node->customObject.type=NodeType::FOLDER;
+    m_hs.InsertNode(m_tmpNode,node,cl::hs::clHSNodeRelation::R_LAST_CHILD);
+
+    m_tmpNode=node;
   }
   return true;
 }
 
 clbool Assembling::HandleLastFileName_(clint pos){
   const LexicalInfo* info=m_vecInfos[pos];
-  clstr str=info->fixedStr;
-  const auto index=str.find_last_of('.');
-  if(index!=string::npos){
-    const clstr nameN=str.substr(0,index);
-    const clstr extension=str.substr(index+1);
-    if(IsStarOnly(nameN)||IsStarOnly(extension)){
-      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::WILDCARD,str));
-    } else{
-      // concrete file name;
-      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::CONCRETE,str));
-    }
-  } else{
-    if(IsStarOnly(str)){
-      m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::WILDCARD,str));
-    } else m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::CONCRETE,str));
+  clstr name=info->fixedStr;
+  if(!Aim_(name)){
+    // 是文件名，又没有瞄准，需要创建结点
+    hsnode* node=m_hs.CreateNode();
+    m_hs.InsertNode(m_tmpNode,node,cl::hs::clHSNodeRelation::R_LAST_CHILD);
+    node->customObject.name=name;
+
+    if(IsWildCardName(name)){
+      node->customObject.type=NodeType::FILE_WILDCARD;
+    } else
+      node->customObject.type=NodeType::FILE;
   }
-  return false;
+  return true;
 }
 
 clbool Assembling::HandleRegexp_(clint index){
   const LexicalInfo* info=m_vecInfos[index+1];
   F_DBG_ASSERT(info);
-  m_vecOut.push_back(new AssembleInfo(m_sRelativePath,AssembleInfoNameType::REGEXP,info->fixedStr));
+  if(!Aim_(info->fixedStr)){
+    // 是目录，又没有瞄准，需要创建目录
+    hsnode* node=m_hs.CreateNode();
+    node->customObject.name=info->fixedStr;
+    node->customObject.type=NodeType::REGEXP;
+    m_hs.InsertNode(m_tmpNode,node,cl::hs::clHSNodeRelation::R_LAST_CHILD);
+  }
+  return true;
+}
+
+clbool Assembling::Aim_(clstr name){
+  hsnode* tmp=m_hs.GetFirstChildNode(m_tmpNode);
+  if(!tmp)return false;
+
+  while(tmp){
+    if(::strcmp(tmp->customObject.name.c_str(),name.c_str())==0){
+      if(tmp->customObject.type==NodeType::FOLDER)
+        m_tmpNode=tmp;
+      return true;
+    }
+    tmp=tmp->GetNextSiblingNode();
+  }
+  return false;
 }

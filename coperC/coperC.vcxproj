@@ -19,16 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\config_file_loader.cpp" />
     <ClCompile Include="src\assembling.cpp" />
+    <ClCompile Include="src\config_file_loader.cpp" />
     <ClCompile Include="src\coper.cpp" />
     <ClCompile Include="src\analyzer.cpp" />
+    <ClCompile Include="src\file_handler.cpp" />
     <ClCompile Include="src\folder_file_validation.cpp" />
     <ClCompile Include="src\interactive_analyzer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\parameter_parser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\file_handler.h" />
     <ClInclude Include="include\assembling.h" />
     <ClInclude Include="include\config_file_loader.h" />
     <ClInclude Include="include\coper.h" />

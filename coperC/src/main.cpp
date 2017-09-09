@@ -24,6 +24,7 @@
 #include "interactive_controller.h"
 #include "config_file_loader.h"
 #include "folder_file_validation.h"
+#include "file_handler.h"
 
 using namespace std;
 using namespace cl;
@@ -61,10 +62,13 @@ void Run(const clchar* filename){
     }
     ga.CleanCache();
   }
-  const vector<AssembleInfo*> about=ab.GetAssembledInfos();
+  hsass* about=ab.GetAssembledHS();
   NewLine();
   Unimportant("Config file analysing finished!");
-  Unimportant("Assembled simple item count : "+clTypeUtil::NumberToString(about.size()));
+  
+#if _DEBUG
+  about->Print();
+#endif
   
   //----------------------------------------------------------------------------------------------------
   // STEP 2;
@@ -81,7 +85,12 @@ void Run(const clchar* filename){
 
   //----------------------------------------------------------------------------------------------------
   // STEP 3;
-  Info("OK");
+  if(pp.IsCopy()){
+    FileHandler::FHCopy(pp,vecFileURL);
+    Unimportant("All files were copied to : "+pp.GetTargetPath());
+  }
+
+  Unimportant("All Down!");
 }
 
 clint main(clint argc,clchar* argv[]){
@@ -93,18 +102,16 @@ clint main(clint argc,clchar* argv[]){
   Unimportant(VERSION,true,false);
   Unimportant("coper.exe URL : "+clstr(argv[0]),true,false);
 
-#if 1
+#if _DEBUG
   const clstr configFileURL("./config.txt");
   Run(configFileURL.c_str());
 #else
-  appURL=argv[0];
 
   if(argc==2){
-    Unimportant("config file URL : "+argv[1],true,false);
+    Unimportant("config file URL : "+clstr(argv[1]),true,false);
     Run(argv[1]);
   } else{
-    Error("请将配置文件拖入coperC.exe文件");
-    //configFileURL="config.txt";
+    Info("请将配置文件拖入coperC.exe文件");
   }
 #endif
   system("pause");

@@ -16,9 +16,13 @@ public:
   clbool Parse(clstr str);
 
   clbool IsVerbose()const{ return m_operation_flag&V_VERBOSE; }
+  clbool IsCopy()const{ return m_operation_flag&V_OPERATION_COPY; }
+  clbool IsDelete()const{ return m_operation_flag&V_OPERATION_DELETE; }
+  clbool IsCut()const{ return m_operation_flag&V_OPERATION_CUT; }
   clbool NeedRequest()const;
   clbool NeedRequestAll()const;
   clstr GetRootPath()const{ return m_rootPath; }
+  clstr GetTargetPath()const{ return m_targetPath; }
 
 private:
   clchar GetCharAt_(clstr str,clint index);

@@ -56,3 +56,8 @@ clbool IsCoperAllowedName(const clstr& str){
   }
 }
 
+clbool IsWildCardName(const clstr& str){
+  return clRegexp::Match(str,R"((\*\.\*|^[^\\/\*:\?"<>\|]*\.\*|\*\.[^\\/\*:\?"<>\|]*$|\*))",true);
+}
+
+

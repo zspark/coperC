@@ -3,8 +3,9 @@
 #include "cllib.h"
 #include "clPrinter.h"
 #include "clRegexpUtil.h"
+#include "clHierarchicalStructure.h"
 
-#define VERSION "V0.4"
+#define VERSION "V0.5"
 
 #define MARK_PARAMETER "parameter"
 #define MARK_ROOT "root"
@@ -27,6 +28,12 @@
 #define str_(s) #s
 #define STR(s) str_(s)
 
+struct NodeInfo;
+
+typedef cl::hs::clHS_T<NodeInfo> hsass;
+typedef cl::hs::clHSNode_T<NodeInfo> hsnode;
+
+
 clbool IsFolderKeyword(const clstr& str);
 clbool IsVLineKeyword(const clstr& str);
 clbool IsStarOnly(const clstr& str);
@@ -37,3 +44,4 @@ clbool IsDoubleRightBracketKeyword(const clstr& str);
 
 clbool IsNameWithoutDotLegal(const clstr& str);
 clbool IsCoperAllowedName(const clstr& str);
+clbool IsWildCardName(const clstr& str);

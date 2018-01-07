@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "coper.h"
-#include "clHierarchicalStructure.h"
 
 
 class FolderFileValidation final{
@@ -14,10 +13,10 @@ public:
   void CleanCache();
 
 private:
-  clbool HandleWildcardName_();
-  clbool HandleRegexp_();
-  clbool HandleConcrete_();
-  clbool HandleFolder_();
+  clbool ValidateWildcardName_();
+  clbool ValidateRegexp_();
+  clbool ValidateConcreteFile_();
+  clbool ValidateFolder_();
 
   hsnode* FindAncestorNextSibling_(hsnode* node);
   void RedirectToParentPath_();

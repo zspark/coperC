@@ -1,5 +1,6 @@
 #pragma once
-#include "cllib.h"
+
+#include "coper.h"
 
 #define V_OPERATION_DELETE (1<<1)
 #define V_OPERATION_CUT (1<<2)

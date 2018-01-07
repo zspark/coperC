@@ -1,8 +1,5 @@
 #include "folder_file_validation.h"
-#include "clFolderAndFile.h"
-#include "clPrinter.h"
-#include "clTypeUtil.h"
-#include "coper.h"
+#include "cl_folder_file.h"
 #include "assembling.h"
 
 using namespace std;
@@ -13,9 +10,9 @@ FolderFileValidation::FolderFileValidation(clstr rootPath,cluint defaultColor
   :m_sRootPath(rootPath)
   ,m_defaultPrintColor(defaultColor)
   ,m_highLightPrintColor(highlightColor)
-  ,m_bVerbosePrint(verbose) {
-  m_sRelativePath="";
-}
+  ,m_bVerbosePrint(verbose)
+  ,m_sRelativePath("")
+{}
 
 FolderFileValidation::~FolderFileValidation(){
   m_pVecOut=nullptr;
@@ -30,7 +27,7 @@ void FolderFileValidation::Validate(hsass* in,vector<clstr>* out){
   while(m_currentNode){
     switch(m_currentNode->customObject.type){
     case NodeType::FILE:
-      HandleConcrete_();
+      ValidateConcreteFile_();
       if(m_currentNode->GetNextSiblingNode())
         m_currentNode=m_currentNode->GetNextSiblingNode();
       else{
@@ -39,7 +36,7 @@ void FolderFileValidation::Validate(hsass* in,vector<clstr>* out){
       }
       break;
     case NodeType::FILE_WILDCARD:
-      HandleWildcardName_();
+      ValidateWildcardName_();
       if(m_currentNode->GetNextSiblingNode())
         m_currentNode=m_currentNode->GetNextSiblingNode();
       else{
@@ -49,11 +46,11 @@ void FolderFileValidation::Validate(hsass* in,vector<clstr>* out){
       break;
     case NodeType::FOLDER:
       flag=false;
-      if(HandleFolder_()){
+      if(ValidateFolder_()){
         if(m_currentNode->GetFirstChildNode())
           m_currentNode=m_currentNode->GetFirstChildNode();
         else{
-          Warning("no config file(s) to be handled in this folder : "+m_sRootPath+m_sRelativePath);
+          W("no config file(s) to be handled in this folder : "+m_sRootPath+m_sRelativePath,1);
           flag=true;
         }
       } else flag=true;
@@ -66,7 +63,7 @@ void FolderFileValidation::Validate(hsass* in,vector<clstr>* out){
       RedirectToParentPath_();
       break;
     case NodeType::REGEXP:
-      HandleRegexp_();
+      ValidateRegexp_();
       if(m_currentNode->GetNextSiblingNode())
         m_currentNode=m_currentNode->GetNextSiblingNode();
       else{
@@ -81,15 +78,13 @@ void FolderFileValidation::Validate(hsass* in,vector<clstr>* out){
 }
 
 void FolderFileValidation::PrintInfo(){
-#define print(s) Unimportant(s,true,false)
-  print("|=================================================");
-  print("| VALIDATION INFOMATIONS:");
-  print("|-------------------------------------------------");
-  print("| Missed folders count : "+clTypeUtil::NumberToString(m_uMissedFoldersCount));
-  print("| Missed files count : "+clTypeUtil::NumberToString(m_uNotExistedFileCount));
-  print("| Existed files count : "+clTypeUtil::NumberToString(m_pVecOut->size()));
-  print("|=================================================");
-#undef print
+  T("|",false); cons->FillRestWith('=');
+  T("| VALIDATION INFOMATIONS:",1);
+  T("|",false); cons->FillRestWith('-');
+  T("| Missed folders count : "+clTypeUtil::NumberToString(m_uMissedFoldersCount),1);
+  T("| Missed files count : "+clTypeUtil::NumberToString(m_uNotExistedFileCount),1);
+  T("| Existed files count : "+clTypeUtil::NumberToString(m_pVecOut->size()),1);
+  T("|",false); cons->FillRestWith('=');
 }
 
 void FolderFileValidation::CleanCache(){
@@ -98,11 +93,11 @@ void FolderFileValidation::CleanCache(){
   m_pVecOut=nullptr;
 }
 
-clbool FolderFileValidation::HandleWildcardName_(){
+clbool FolderFileValidation::ValidateWildcardName_(){
   FolderAndFile ff;
   cFFInfo* ffInfo=ff.Traverse(m_sRootPath+m_sRelativePath,FolderAndFile::V_FILE);
   if(ffInfo==nullptr){
-    Error("there is no file at your folder : "+m_sRootPath+m_sRelativePath);
+    E("there is no file at your folder : "+m_sRootPath+m_sRelativePath,1);
     return false;
   } else{
     clstr nameN;
@@ -141,11 +136,11 @@ clbool FolderFileValidation::HandleWildcardName_(){
   }
 }
 
-clbool FolderFileValidation::HandleRegexp_(){
+clbool FolderFileValidation::ValidateRegexp_(){
   FolderAndFile ff;
   cFFInfo* ffInfo=ff.Traverse(m_sRootPath+m_sRelativePath,FolderAndFile::V_FILE);
   if(ffInfo==nullptr){
-    Error("there is no file at your folder : "+m_sRootPath+m_sRelativePath);
+    E("there is no file at your folder : "+m_sRootPath+m_sRelativePath,1);
     m_uMissedFoldersCount++;
     return false;
   } else{
@@ -160,26 +155,26 @@ clbool FolderFileValidation::HandleRegexp_(){
   }
 }
 
-clbool FolderFileValidation::HandleConcrete_(){
+clbool FolderFileValidation::ValidateConcreteFile_(){
   const clstr fileURL=m_sRootPath+m_sRelativePath+m_currentNode->customObject.name;
   clbool b=FolderAndFile::IsFileExist(fileURL);
   if(b){
     m_pVecOut->push_back(m_sRelativePath+m_currentNode->customObject.name);
     return true;
   } else{
-    Error("there is no such file at your system : "+fileURL);
+    E("there is no such file at your system : "+fileURL,1);
     m_uNotExistedFileCount++;
     return false;
   }
 }
 
-clbool FolderFileValidation::HandleFolder_(){
+clbool FolderFileValidation::ValidateFolder_(){
   const clstr folderPath=m_sRootPath+m_sRelativePath+m_currentNode->customObject.name+"/";
   clbool b=FolderAndFile::IsFolderExist(folderPath);
   if(b){
     return true;
   } else{
-    Error("there is no such folder at your system : "+folderPath);
+    E("there is no such folder at your system : "+folderPath,1);
     return false;
   }
 }

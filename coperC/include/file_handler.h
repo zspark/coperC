@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include "coper.h"
+#include <vector>
 
 class ParameterParser;
 

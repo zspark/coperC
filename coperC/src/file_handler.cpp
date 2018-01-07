@@ -1,18 +1,18 @@
 #include "file_handler.h"
 #include <vector>
 #include <map>
-#include "clFolderAndFile.h"
+#include "cl\cl_folder_file.h"
 #include "parameter_parser.h"
 
-namespace FileHandler{
 using namespace std;
 
+namespace FileHandler{
 
 void FHCopy(const ParameterParser & pp,const vector<clstr>& vec){
   //create target folder;
   const clstr rootPath=pp.GetRootPath();
   const clstr targetPath=pp.GetTargetPath();
-  cl::FolderAndFile::CreateFolder(targetPath);
+  clFF::CreateFolder(targetPath);
 
   map<clstr,vector<clstr>> mapTmp;
   clstr path,name;
@@ -32,11 +32,11 @@ void FHCopy(const ParameterParser & pp,const vector<clstr>& vec){
   for(auto& it:mapTmp){
     // create folders
     path=it.first;
-    cl::FolderAndFile::CreateFolder(targetPath+path);
+    clFF::CreateFolder(targetPath+path);
 
     //copy files
     for(auto& name:it.second){
-      cl::FolderAndFile::CopyFileTo(rootPath+path+name,targetPath+path+name);
+      clFF::CopyFileTo(rootPath+path+name,targetPath+path+name);
     }
   }
 

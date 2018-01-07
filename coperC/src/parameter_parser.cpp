@@ -1,8 +1,6 @@
 #include <vector>
-#include "coper.h"
 #include "parameter_parser.h"
-#include "clFolderAndFile.h"
-#include "clPrinter.h"
+#include "cl_folder_file.h"
 
 using namespace std;
 using namespace cl;
@@ -74,7 +72,7 @@ clbool ParameterParser::Parse(clstr str){
   cluint operation=m_operation_flag&0x000000FF;
   if(operation==V_OPERATION_COPY || operation==V_OPERATION_CUT || operation==V_OPERATION_DELETE)m_operation_flag|=V_INITED;
   else{
-    Error("-c,-d,-x can NOT exist more than one. and MUST exist only one.");
+    E("-c,-d,-x can NOT exist more than one. and MUST exist only one.",1);
     flag=false;
   }
 
@@ -82,11 +80,11 @@ clbool ParameterParser::Parse(clstr str){
   if(FolderAndFile::IsFolderExist(m_rootPath))m_operation_flag|=V_INITED;
   else{
     m_operation_flag&=~V_INITED;
-    Error("root path is NOT exist in your file system.");
+    E("root path is NOT exist in your file system.",1);
     flag=false;
   }
   if(!flag){
-    Unimportant(str);
+    T(str,1);
   }
   return flag;
 }

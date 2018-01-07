@@ -1,11 +1,12 @@
 #pragma once
 
-#include "cllib.h"
-#include "clPrinter.h"
-#include "clRegexpUtil.h"
-#include "clHierarchicalStructure.h"
+#include "cl/cl_types.h"
+#include "cl/cl_misc.h"
+#include "cl/cl_regexp_util.h"
+#include "cl/cl_hierarchical_structure.h"
+#include "cl/cl_console.h"
 
-#define VERSION "V0.5"
+#define VERSION "coper v0.6"
 
 #define MARK_PARAMETER "parameter"
 #define MARK_ROOT "root"
@@ -28,10 +29,17 @@
 #define str_(s) #s
 #define STR(s) str_(s)
 
+#define cons cl::clConsole::GetSingalton()
+#define W(s,b) cons->Warning(s,b);
+#define I(s,b) cons->Info(s,b);
+#define E(s,b) cons->Error(s,b);
+#define T(s,b) cons->Text(s,b);
+#define ASSERT(s) {if(!(s))throw "assertion failure";}
+
 struct NodeInfo;
 
-typedef cl::hs::clHS_T<NodeInfo> hsass;
-typedef cl::hs::clHSNode_T<NodeInfo> hsnode;
+typedef cl::hs::clHS hsass;
+typedef cl::hs::clHSNode hsnode;
 
 
 clbool IsFolderKeyword(const clstr& str);

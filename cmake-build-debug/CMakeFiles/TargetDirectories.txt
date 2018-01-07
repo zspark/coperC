@@ -1,0 +1,3 @@
+Z:/coperC/cmake-build-debug/CMakeFiles/coperC.dir
+Z:/coperC/cmake-build-debug/CMakeFiles/edit_cache.dir
+Z:/coperC/cmake-build-debug/CMakeFiles/rebuild_cache.dir

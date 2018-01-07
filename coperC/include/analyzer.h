@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "cllib.h"
+#include "coper.h"
 
 namespace LexicalInfoType{
 enum infotype{
@@ -40,7 +40,7 @@ public:
 private:
   //----------------------------------------------------------------------------------------------------
   // common;
-  void PrintError_(clstr s,const LexicalInfo* info,clstr rawStr,cluint c1,cluint c2);
+  void PrintError_(clstr s,const LexicalInfo* info,clstr rawStr);
   //----------------------------------------------------------------------------------------------------
   // Lexical analyzer
   clbool AnalyzeLexical_();

@@ -1,7 +1,6 @@
+#include "interactive_controller.h"
 #include <iostream>
 #include <iomanip>
-#include "interactive_controller.h"
-#include "clPrinter.h"
 
 using namespace std;
 using namespace cl;
@@ -12,7 +11,7 @@ InteractiveController::InteractiveController(){}
 InteractiveController::~InteractiveController(){}
 
 clbool InteractiveController::RequestAnalyzing(){
-  Text("Going to analysing config file items, do you agree? (y/n)",ConsoleForeground::WHITE,false);
+  T("Going to analysing config file items, do you agree? (y/n)",0);
   clbool r;
   clchar input;
   do{
@@ -27,7 +26,7 @@ clbool InteractiveController::RequestAnalyzing(){
 }
 
 clbool InteractiveController::RequestValidation(){
-  Text("Going to load items, and validate folder and|or file existance, do you agree? (y/n)",ConsoleForeground::WHITE,false);
+  T("Going to load items, and validate folder and|or file existance, do you agree? (y/n)",false);
   clbool r;
   clchar input;
   do{

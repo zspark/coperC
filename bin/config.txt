@@ -1,3 +1,5 @@
-parameter -v -y Y x d -c -r "C:/Windows/System32/" -t "./root2/"
+parameter -v -y Y x d -c -r "./root/" -t "./root2/"
 
-*.exe
+#<adalsql|advapi32|AERTAR64>.dll
+1033/>>\w*\.dll
+jhjhjh/jjj<hhh>.l

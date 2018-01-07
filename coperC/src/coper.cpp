@@ -1,6 +1,5 @@
-#include <vector>
 #include "coper.h"
-#include "clRegexpUtil.h"
+#include <vector>
 
 /*
 window系统规定，目录，文件名不能含有以下字符：

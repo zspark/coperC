@@ -1,5 +1,4 @@
 #include "assembling.h"
-#include "coper.h"
 #include "analyzer.h"
 
 using namespace std;
@@ -26,11 +25,11 @@ void Assembling::Assemble(const vector<LexicalInfo*>& in){
       if(strcmp(info->fixedStr.c_str(),MARK_SLASH)==0){
         HandleSlash_(i);
       } else if(strcmp(info->fixedStr.c_str(),MARK_V_LINE)==0){
-        F_DBG_ASSERT(false);
+        ASSERT(false);
       } else if(strcmp(info->fixedStr.c_str(),MARK_LEFT_BRACKET)==0){
         i=HandleBracket_(i);
       } else if(strcmp(info->fixedStr.c_str(),MARK_RIGHT_BRACKET)==0){
-        F_DBG_ASSERT(false);
+        ASSERT(false);
       } else if(strcmp(info->fixedStr.c_str(),MARK_DOUBLE_RIGHT_BRACKET)==0){
         HandleRegexp_(i);
       }
@@ -76,7 +75,7 @@ cluint Assembling::HandleBracket_(clint index){
 inline clbool Assembling::HandleSlash_(clint index){
   const LexicalInfo* preInfo=m_vecInfos[index-1];
   if(!Aim_(preInfo->fixedStr)){
-    // ÊÇÄ¿Â¼£¬ÓÖÃ»ÓÐÃé×¼£¬ÐèÒª´´½¨Ä¿Â¼
+    // ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ä¿Â¼
     hsnode* node=m_hs.CreateNode();
     node->customObject.name=preInfo->fixedStr;
     node->customObject.type=NodeType::FOLDER;
@@ -91,7 +90,7 @@ clbool Assembling::HandleLastFileName_(clint pos){
   const LexicalInfo* info=m_vecInfos[pos];
   clstr name=info->fixedStr;
   if(!Aim_(name)){
-    // ÊÇÎÄ¼þÃû£¬ÓÖÃ»ÓÐÃé×¼£¬ÐèÒª´´½¨½áµã
+    // ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     hsnode* node=m_hs.CreateNode();
     m_hs.InsertNode(m_tmpNode,node,cl::hs::clHSNodeRelation::R_LAST_CHILD);
     node->customObject.name=name;
@@ -108,7 +107,7 @@ clbool Assembling::HandleRegexp_(clint index){
   const LexicalInfo* info=m_vecInfos[index+1];
   F_DBG_ASSERT(info);
   if(!Aim_(info->fixedStr)){
-    // ÊÇÄ¿Â¼£¬ÓÖÃ»ÓÐÃé×¼£¬ÐèÒª´´½¨Ä¿Â¼
+    // ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ä¿Â¼
     hsnode* node=m_hs.CreateNode();
     node->customObject.name=info->fixedStr;
     node->customObject.type=NodeType::REGEXP;

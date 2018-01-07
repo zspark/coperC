@@ -17,7 +17,6 @@
 #include <windows.h>
 #include <vector>
 #include "coper.h"
-#include "clTypeUtil.h"
 #include "parameter_parser.h"
 #include "analyzer.h"
 #include "assembling.h"
@@ -36,7 +35,7 @@ void Run(const clchar* filename){
   //----------------------------------------------------------------------------------------------------
   // STEP 1-1;
   vector<clstr> needParsingItems;
-  ConfigFileLoader cfl(ConsoleForeground::GRAY,ConsoleForeground::RED);
+  ConfigFileLoader cfl(ConForeColor::GRAY,ConForeColor::RED);
   if(cfl.Load(filename,needParsingItems,&pp)){
     // load successfully.
     cfl.PrintInfo();
@@ -47,13 +46,13 @@ void Run(const clchar* filename){
   // STEP 1-2
   const cluint needParsingItemCount=needParsingItems.size();
   cluint avaliableItemCount=0;
-  GrammarAnalyzer ga(ConsoleForeground::GRAY,ConsoleForeground::RED,pp.IsVerbose());
-  Assembling ab(ConsoleForeground::GRAY,ConsoleForeground::RED,pp.IsVerbose());
+  GrammarAnalyzer ga(ConForeColor::GRAY,ConForeColor::RED,pp.IsVerbose());
+  Assembling ab(ConForeColor::GRAY,ConForeColor::RED,pp.IsVerbose());
   for(clint i=0;i<needParsingItemCount;i++){
     const clstr s=needParsingItems[i];
     if(pp.IsVerbose()){
-      NewLine();
-      Unimportant(s,true,false);
+      cons->NewLine();
+      T(s,true);
     }
 
     if(ga.Analyze(s)){
@@ -63,8 +62,8 @@ void Run(const clchar* filename){
     ga.CleanCache();
   }
   hsass* about=ab.GetAssembledHS();
-  NewLine();
-  Unimportant("Config file analysing finished!");
+  cons->NewLine();
+  T("Config file analysing finished!",true);
   
 #if _DEBUG
   about->Print();
@@ -75,8 +74,8 @@ void Run(const clchar* filename){
   if(pp.NeedRequest()) if(!ic.RequestValidation())return;
   vector<clstr> vecFileURL;
   FolderFileValidation ffv(pp.GetRootPath()
-    ,ConsoleForeground::GRAY
-    ,ConsoleForeground::RED
+    ,ConForeColor::GRAY
+    ,ConForeColor::RED
     ,pp.IsVerbose()
   );
   ffv.Validate(about,&vecFileURL);
@@ -87,20 +86,16 @@ void Run(const clchar* filename){
   // STEP 3;
   if(pp.IsCopy()){
     FileHandler::FHCopy(pp,vecFileURL);
-    Unimportant("All files were copied to : "+pp.GetTargetPath());
+    T("All files were copied to : "+pp.GetTargetPath(),true);
   }
 
-  Unimportant("All Down!");
+  T("All Down!",true);
 }
 
 clint main(clint argc,clchar* argv[]){
-  //char * c_title="Coper version:1.0.1";
-  //SetConsoleTitle(c_title);
 
-
-  Unimportant("Hello Coper! ",false,false);
-  Unimportant(VERSION,true,false);
-  Unimportant("coper.exe URL : "+clstr(argv[0]),true,false);
+  cons->SetTitle(VERSION);
+  T("coper.exe URL : "+clstr(argv[0]),true);
 
 #if _DEBUG
   const clstr configFileURL("./config.txt");
@@ -108,12 +103,12 @@ clint main(clint argc,clchar* argv[]){
 #else
 
   if(argc==2){
-    Unimportant("config file URL : "+clstr(argv[1]),true,false);
+    T("config file URL : "+clstr(argv[1]),true);
     Run(argv[1]);
   } else{
-    Info("请将配置文件拖入coperC.exe文件");
+    I("请将配置文件拖入coperC.exe文件",true);
   }
 #endif
-  system("pause");
+  cl::clConsole::Release();
   return 0;
 }

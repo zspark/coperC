@@ -1,7 +1,5 @@
-#include <fstream>
 #include "config_file_loader.h"
-#include "clRegexpUtil.h"
-#include "clPrinter.h"
+#include <fstream>
 #include "parameter_parser.h"
 
 using namespace std;
@@ -35,7 +33,7 @@ clbool ConfigFileLoader::Load( clstr fileURL,std::vector<clstr>& out ,ParameterP
 
       if(clRegexp::IsStartedWith(itemStr,"parameter",true)){
         if(m_uParameterLineCount++>1){
-          Error("parameter item should NOT exist more than one!");
+          E("parameter item should NOT exist more than one!",1);
           return false;
         }
         m_sParameterLine=itemStr;
@@ -56,22 +54,20 @@ clbool ConfigFileLoader::Load( clstr fileURL,std::vector<clstr>& out ,ParameterP
     //Error("There is no parameter item exists, please check your config file.");
     return false;
   } else if(m_uParameterLineCount>1){
-    Error("There are more than one parameter items exist, please check your config file.");
+    E("There are more than one parameter items exist, please check your config file.",1);
     return false;
   }
   return true;
 }
 
 void ConfigFileLoader::PrintInfo(){
-#define print(s) Unimportant(s,true,false)
-  print("|=================================================");
-  print("| CONIFG FILE INFOMATIONS:");
-  print("|-------------------------------------------------");
-  print("| Config file URL : "+m_sConfigFileURL);
-  print("| Total blank lines: "+clTypeUtil::NumberToString(m_uTotalBlankItemCount-1));
-  print("| Total comment lines: "+clTypeUtil::NumberToString(m_uTotalCommentItemCount));
-  print("| Total avaliable lines: "+clTypeUtil::NumberToString(m_uTotalAvaliableItemCount));
-  print("| Parameter line: "+m_sParameterLine);
-  print("|=================================================");
-#undef print
+  T("|",0); cons->FillRestWith('=');
+  T("| CONIFG FILE INFOMATIONS:",1);
+  T("|",0); cons->FillRestWith('-');
+  T("| Config file URL : "+m_sConfigFileURL,1);
+  T("| Total blank lines: "+clTypeUtil::NumberToString(m_uTotalBlankItemCount-1),1);
+  T("| Total comment lines: "+clTypeUtil::NumberToString(m_uTotalCommentItemCount),1);
+  T("| Total avaliable lines: "+clTypeUtil::NumberToString(m_uTotalAvaliableItemCount),1);
+  T("| Parameter line: "+m_sParameterLine,1);
+  T("|",0); cons->FillRestWith('=');
 }

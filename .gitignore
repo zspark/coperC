@@ -8,8 +8,6 @@
 *.user
 *.filters
 *.vcxproj.filters
-*.vcxproj
-*.lib
 *.pdb
 *.idb
 *.obj
@@ -19,11 +17,7 @@
 *.log
 *.lastbuildstate
 *.swp
-*.un~
-*.txt~
+*.*~
 x64/
-external/
 Debug/
 Release/
-external-libs/
-external-includes/
